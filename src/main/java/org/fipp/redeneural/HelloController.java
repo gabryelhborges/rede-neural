@@ -23,7 +23,7 @@ public class HelloController {
     @FXML
     private TableView<ObservableList<String>> tableView;
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
-    private List<String> listaClasses;
+    private List<String> listaClasses;//teste branch
 
     public void onChooseFileButtonClick(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
