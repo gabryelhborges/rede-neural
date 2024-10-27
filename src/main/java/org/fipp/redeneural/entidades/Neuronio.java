@@ -9,7 +9,7 @@ public class Neuronio {
     private double erro;
     private List<Conexao> conexoes;//representa os neuronios destino
 
-    private void adicionaConexao(Conexao c){
+    public void adicionaConexao(Conexao c){
         this.conexoes.add(c);
     }
 

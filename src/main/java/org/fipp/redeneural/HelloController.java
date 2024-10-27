@@ -9,6 +9,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.fipp.redeneural.entidades.RedeNeural;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,7 +33,21 @@ public class HelloController {
         File selectedFile = fileChooser.showOpenDialog(new Stage());
         if (selectedFile != null) {
             loadCSVFile(selectedFile);
+            criaRedeNeural();
         }
+    }
+
+    private void criaRedeNeural() {
+        //-1 pra nao incluir a coluna da classe
+        int qtdeEntrada = tableView.getColumns().size() - 1;
+        int qtdeSaida = listaClasses.size();
+
+        //pegar valores dos campos da tela, se nao houver, enviar valores padrao
+        //exemplo padrao: new RedeNeural(qtdeEntrada, qtdeSaida, 0, 0.001, 2000, 1, true, true);
+
+        RedeNeural redeNeural = new RedeNeural(qtdeEntrada, qtdeSaida, 0, 0.001, 2000, 1, true, true);
+
+        redeNeural.treinar();
     }
 
     private void loadCSVFile(File file) {
@@ -149,11 +164,6 @@ public class HelloController {
             column.setPrefWidth(tableWidth / columnCount);
         }
     }
-
-    public List<String> getListaClasses() {
-        return listaClasses;
-    }
-
     public void setListaClasses(List<String> listaClasses) {
         this.listaClasses = listaClasses;
     }
