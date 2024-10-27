@@ -1,4 +1,4 @@
-package org.fipp.redeneural;
+package org.fipp.redeneural.entidades;
 
 import java.util.ArrayList;
 import java.util.List;

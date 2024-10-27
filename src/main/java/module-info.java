@@ -5,4 +5,6 @@ module org.fipp.redeneural {
 
     opens org.fipp.redeneural to javafx.fxml;
     exports org.fipp.redeneural;
+    exports org.fipp.redeneural.entidades;
+    opens org.fipp.redeneural.entidades to javafx.fxml;
 }
