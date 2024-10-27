@@ -1,5 +1,6 @@
 package org.fipp.redeneural.entidades;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RedeNeural {
@@ -7,11 +8,12 @@ public class RedeNeural {
     private int qtdeCamadasOcultas;
     private int qtdeSaidas;
     private double taxaAprendizagem;
+    private double erro;//limiar
+    private int epocas;
     private List<Neuronio> neuroniosEntrada;
     private List<Neuronio> neuroniosOcultos;
     private List<Neuronio> neuroniosSaida;
-    //definir criterio de parada: por epocas ou erro
-
+    private boolean criterioParada;//true para epocas e false para erro
     /*
     - A rede neural eh estimulada por um ambiente
     - A rede neural sofre modificacoes nos seus parametros livres
@@ -31,31 +33,60 @@ public class RedeNeural {
     11- Calcula o erro da rede
     - Aplicar os passos 2 a 11 ate que o erro da rede seja menor que o limiar
     */
-
-
-    public RedeNeural(int qtdeEntradas, int qtdeSaidas, double taxaAprendizagem) {
+    public RedeNeural(int qtdeEntradas, int qtdeSaidas, int qtdeCamadasOcultas, double erro, int epocas, double taxaAprendizagem, boolean aritmetica, boolean criterioParada) {
         this.qtdeEntradas = qtdeEntradas;
         this.qtdeSaidas = qtdeSaidas;
+        this.erro = erro;
+        this.epocas = epocas;
         this.taxaAprendizagem = taxaAprendizagem;
-        this.qtdeCamadasOcultas = calcularQtdeCamadasOcultas(true);
+        if(qtdeCamadasOcultas == 0){
+            this.qtdeCamadasOcultas = calcularQtdeCamadasOcultas(aritmetica);
+        }
+        else{
+            this.qtdeCamadasOcultas = qtdeCamadasOcultas;
+        }
+        this.criterioParada = criterioParada;
+
         inicializarNeuronios();
+        criarConexoes();
+    }
+
+    public void treinar(){
+
+    }
+
+    private void criarConexoes() {
+        //criar conexoes entre os neuronios
+        //conexoes entre os neuronios de entrada e os neuronios da camada oculta
+        for (Neuronio nEntrada : neuroniosEntrada) {
+            for (Neuronio nOculto : neuroniosOcultos) {
+                Conexao c = new Conexao(nEntrada, nOculto, Math.random());
+                nEntrada.adicionaConexao(c);
+            }
+        }
+
+        //conexoes entre os neuronios da camada oculta e os neuronios de saida
+        for (Neuronio nOculto : neuroniosOcultos) {
+            for (Neuronio nSaida : neuroniosSaida) {
+                Conexao c = new Conexao(nOculto, nSaida, Math.random());
+                nOculto.adicionaConexao(c);
+            }
+        }
+    }
+
+    public List<Neuronio> criaListaNeuronio(int qtde){
+        List<Neuronio> neuronios = new ArrayList<>();
+        for (int i = 0; i < qtde; i++) {
+            neuronios.add(new Neuronio());
+        }
+        return neuronios;
     }
 
     private void inicializarNeuronios() {
         //inicializa os neuronios de entrada
-        for (int i = 0; i < qtdeEntradas; i++) {
-            neuroniosEntrada.add(new Neuronio());
-        }
-
-        //inicializa os neuronios da camada oculta
-        for (int i = 0; i < qtdeCamadasOcultas; i++) {
-            neuroniosOcultos.add(new Neuronio());
-        }
-
-        //inicializa os neuronios de saida
-        for (int i = 0; i < qtdeSaidas; i++) {
-            neuroniosSaida.add(new Neuronio());
-        }
+        neuroniosEntrada = criaListaNeuronio(qtdeEntradas);
+        neuroniosOcultos = criaListaNeuronio(qtdeCamadasOcultas);
+        neuroniosSaida = criaListaNeuronio(qtdeSaidas);
     }
 
     private void funcaoSaida(String funcao){
@@ -135,5 +166,29 @@ public class RedeNeural {
 
     public void setNeuroniosSaida(List<Neuronio> neuroniosSaida) {
         this.neuroniosSaida = neuroniosSaida;
+    }
+
+    public double getErro() {
+        return erro;
+    }
+
+    public void setErro(double erro) {
+        this.erro = erro;
+    }
+
+    public int getEpocas() {
+        return epocas;
+    }
+
+    public void setEpocas(int epocas) {
+        this.epocas = epocas;
+    }
+
+    public boolean isCriterioParada() {
+        return criterioParada;
+    }
+
+    public void setCriterioParada(boolean criterioParada) {
+        this.criterioParada = criterioParada;
     }
 }
