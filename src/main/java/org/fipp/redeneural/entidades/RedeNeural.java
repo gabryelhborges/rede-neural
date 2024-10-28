@@ -70,54 +70,11 @@ public class RedeNeural {
         // matriz de confusão
         int[][] matrizConfusao = new int[qtdeSaidas][qtdeSaidas];
         for (ObservableList<String> linha : tabelaTestes.getItems()) {
-            // Local variables to hold net and I values
-            double[] netOcultos = new double[neuroniosOcultos.size()];
-            double[] iOcultos = new double[neuroniosOcultos.size()];
-            double[] netSaidas = new double[neuroniosSaida.size()];
-            double[] iSaidas = new double[neuroniosSaida.size()];
 
-            // Calculate net values for hidden neurons
-            for (int k = 0; k < linha.size() - 1; k++) {
-                double entrada = Double.parseDouble(linha.get(k));
-                Neuronio nEntrada = neuroniosEntrada.get(k);
-                for (Conexao c : nEntrada.getConexoes()) {
-                    Neuronio nOculto = c.getDestino();
-                    int index = neuroniosOcultos.indexOf(nOculto);
-                    netOcultos[index] += entrada * c.getPeso();
-                }
-            }
-
-            // Calculate I values for hidden neurons
-            for (int i = 0; i < neuroniosOcultos.size(); i++) {
-                iOcultos[i] = funcaoSaida(netOcultos[i], funcaoTransferencia);
-            }
-
-            // Calculate net values for output neurons
-            for (int i = 0; i < neuroniosSaida.size(); i++) {
-                Neuronio nSaida = neuroniosSaida.get(i);
-                for (Conexao c : nSaida.getConexoes()) {
-                    int index = neuroniosOcultos.indexOf(c.getOrigem());
-                    netSaidas[i] += iOcultos[index] * c.getPeso();
-                }
-            }
-
-            // Calculate I values for output neurons
-            for (int i = 0; i < neuroniosSaida.size(); i++) {
-                iSaidas[i] = funcaoSaida(netSaidas[i], funcaoTransferencia);
-            }
-
-            // Determine the predicted class
-            int classe = Integer.parseInt(linha.get(linha.size() - 1));
-            int maior = 0;
-            for (int i = 0; i < qtdeSaidas; i++) {
-                if (iSaidas[i] > iSaidas[maior]) {
-                    maior = i;
-                }
-            }
-            matrizConfusao[classe - 1][maior]++;
         }
 
-        System.out.println("\n\n\nMatriz de confusão: ");
+        // exibe a matriz de confusão
+        System.out.println("Matriz de Confusão:");
         for (int i = 0; i < qtdeSaidas; i++) {
             for (int j = 0; j < qtdeSaidas; j++) {
                 System.out.print(matrizConfusao[i][j] + " ");
@@ -127,32 +84,29 @@ public class RedeNeural {
     }
 
     private void treinarPorEpocas(TableView<ObservableList<String>> tabela) {
-//        for (int i = 0; i < this.epocas; i++) {
-//            //fazer metodos genericos para que possa ser utilizado no treinamento por erro
-//            executarBackPropagation(tabela);
-//        }
         int k = 0;
         do{
             for (ObservableList<String> linha : tabela.getItems()) {
-                executarBackPropagation2(linha);
+                executarBackPropagation(linha);
+                System.out.println("Erro da rede: " + calculaErroRede());
             }
             k++;
         }while(k < this.epocas);
     }
 
-    private void executarBackPropagation2(ObservableList<String> linha) {
-        calculaNetCamadaOculta2(linha);
+    private void executarBackPropagation(ObservableList<String> linha) {
+        calculaNetCamadaOculta(linha);
         calculaICamada(neuroniosOcultos);//calculaI da camada oculta
         calculaNetCamadaSaida();
         calculaICamada(neuroniosSaida);//calculaI da camada de saida
         calculaErroCamadaSaida();
         calculaErroCamadaOculta();
         atualizaPesosCamadaSaida();//atualiza pesos da camada de saida
-        atualizaPesosCamadaOculta2(linha);//atualiza pesos da camada oculta
+        atualizaPesosCamadaOculta(linha);//atualiza pesos da camada oculta
         //calculaErroRede();//somente para treinamento por erro
     }
 
-    private void atualizaPesosCamadaOculta2(ObservableList<String> linha) {
+    private void atualizaPesosCamadaOculta(ObservableList<String> linha) {
         for (int k = 0; k < linha.size() - 1; k++) { // -1 para não incluir a coluna da classe
             double entrada = Double.parseDouble(linha.get(k));
             Neuronio nEntrada = neuroniosEntrada.get(k);
@@ -162,10 +116,10 @@ public class RedeNeural {
                 c.setPeso(novopeso);
             }
         }
-        System.out.println("Terminou de atualizar os pesos da camada oculta2");
+        //System.out.println("Terminou de atualizar os pesos da camada oculta2");
     }
 
-    private void calculaNetCamadaOculta2(ObservableList<String> linha) {
+    private void calculaNetCamadaOculta(ObservableList<String> linha) {
         zeraNetNeuronios(neuroniosOcultos);
         for (int k = 0; k < linha.size()-1; k++) {//-1 tira a classe // iterar sobre as colunas da linha
             double entrada = Double.parseDouble(linha.get(k));
@@ -176,28 +130,20 @@ public class RedeNeural {
                 nOculto.setNet(nOculto.getNet() + net);//neuronio deve comecar com net = 0 para ir incrementando o valor
             }
         }
-        System.out.println("Terminou de calcular os nets da camada oculta2");
+        //System.out.println("Terminou de calcular os nets da camada oculta2");
     }
 
     private void treinarPorErro(TableView<ObservableList<String>> tabela) {
         double erroRede;
         do {
-            executarBackPropagation(tabela);
+            for (ObservableList<String> linha : tabela.getItems()) {
+                executarBackPropagation(linha);
+                erroRede = calculaErroRede();
+                System.out.println("Erro da rede: " + erroRede);
+            }
             erroRede = calculaErroRede();
-            System.out.println("Erro da rede: " + erroRede);
         } while (this.limiar < erroRede);//enquanto erro da rede for maior que o erro estipulado(limiar)
-    }
-
-    private void executarBackPropagation(TableView<ObservableList<String>> tabela) {//nao deveria mandar a tabela, somente a linha?
-        calculaNetCamadaOculta(tabela);
-        calculaICamada(neuroniosOcultos);//calculaI da camada oculta
-        calculaNetCamadaSaida();
-        calculaICamada(neuroniosSaida);//calculaI da camada de saida
-        calculaErroCamadaSaida();
-        calculaErroCamadaOculta();
-        atualizaPesosCamadaSaida();//atualiza pesos da camada de saida
-        atualizaPesosCamadaOculta(tabela);//atualiza pesos da camada oculta
-        //calculaErroRede();//somente para treinamento por erro
+        System.out.println("Erro final rede com erro: "+erroRede);
     }
 
     private void atualizaPesosCamadaSaida(){
@@ -208,23 +154,10 @@ public class RedeNeural {
                 c.setPeso(novopeso);
             }
         }
-        System.out.println("Terminou de atualizar os pesos da camada de saida");
+        //System.out.println("Terminou de atualizar os pesos da camada de saida");
     }
 
-    private void atualizaPesosCamadaOculta(TableView<ObservableList<String>> tabela) {
-        for (ObservableList<String> linha : tabela.getItems()) {
-            for (int k = 0; k < linha.size() - 1; k++) { // -1 para não incluir a coluna da classe
-                double entrada = Double.parseDouble(linha.get(k));
-                Neuronio nEntrada = neuroniosEntrada.get(k);
-                for (Conexao c : nEntrada.getConexoes()) {
-                    Neuronio nOculto = c.getDestino();
-                    double novopeso = c.getPeso() + taxaAprendizagem * nOculto.getErro() * entrada;
-                    c.setPeso(novopeso);
-                }
-            }
-        }
-        System.out.println("Terminou de atualizar os pesos da camada oculta");
-    }
+
 
     private void calculaErroCamadaOculta() {
         for(Neuronio n : neuroniosOcultos){
@@ -235,7 +168,7 @@ public class RedeNeural {
             erro = erro * derivadaFuncaoSaida(n.getNet(),funcaoTransferencia);
             n.setErro(erro);
         }
-        System.out.println("Terminou de calcular os erros da camada oculta");
+        //System.out.println("Terminou de calcular os erros da camada oculta");
     }
 
     private void calculaErroCamadaSaida() {
@@ -245,7 +178,7 @@ public class RedeNeural {
             double erro = (desejado - n.getI()) * derivadaFuncaoSaida(n.getNet(),funcaoTransferencia);
             n.setErro(erro);
         }
-        System.out.println("Terminou de calcular os erros da camada de saida");
+        //System.out.println("Terminou de calcular os erros da camada de saida");
     }
 
     private void calculaNetCamadaSaida() {
@@ -260,7 +193,7 @@ public class RedeNeural {
             }
             nSaida.setNet(net);
         }
-        System.out.println("Terminou de calcular os nets da camada de saida");
+        //System.out.println("Terminou de calcular os nets da camada de saida");
     }
 
     private void calculaICamada(List<Neuronio> neuronios) {
@@ -269,23 +202,7 @@ public class RedeNeural {
             double res = funcaoSaida(n.getNet(),funcaoTransferencia);
             n.setI(res);
         }
-        System.out.println("Terminou de calcular os I da camada");
-    }
-
-    private void calculaNetCamadaOculta(TableView<ObservableList<String>> tabela){
-        zeraNetNeuronios(neuroniosOcultos);
-        for (ObservableList<String> linha : tabela.getItems()){//iterar sobre as linhas da tabela
-            for (int k = 0; k < linha.size()-1; k++) {//-1 tira a classe // iterar sobre as colunas da linha
-                double entrada = Double.parseDouble(linha.get(k));
-                Neuronio nEntrada = neuroniosEntrada.get(k);
-                for(Conexao c : nEntrada.getConexoes()){
-                    Neuronio nOculto = c.getDestino();
-                    double net = entrada * c.getPeso();
-                    nOculto.setNet(nOculto.getNet() + net);//neuronio deve comecar com net = 0 para ir incrementando o valor
-                }
-            }
-        }
-        System.out.println("Terminou de calcular os nets da camada oculta");
+        //System.out.println("Terminou de calcular os I da camada");
     }
 
     private void zeraNetNeuronios(List<Neuronio> neuronios) {

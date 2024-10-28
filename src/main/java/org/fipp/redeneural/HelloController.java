@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -37,7 +38,7 @@ public class HelloController {
         //TODO: pegar valores dos campos da tela, se nao houver, enviar valores padrao
         //exemplo padrao: new RedeNeural(qtdeEntrada, qtdeSaida, 0, 0.001, 2000, "linear", 1, true, true);//exemplo pdf
 
-        redeNeural = new RedeNeural(qtdeEntrada, qtdeSaida, 0, 0.001, 2000, "linear", 0.5, true, false);
+        redeNeural = new RedeNeural(qtdeEntrada, qtdeSaida, 8, 0.00001, 2000, "linear", 1, true, false);
     }
 
     public void onChooseFileButtonClick(ActionEvent actionEvent) {
@@ -172,12 +173,12 @@ public class HelloController {
     public void onIniciarTreinamentoClick(ActionEvent actionEvent) {
         criaRedeNeural();
         redeNeural.treinar(tableView);
-        Util.exibirMensagem("Treinamento", "Treinamento concluído com sucesso!", javafx.scene.control.Alert.AlertType.INFORMATION);
+        Util.exibirMensagem("Treinamento", "Treinamento concluído com sucesso!", Alert.AlertType.INFORMATION);
     }
 
     public void onIniciarTestesClick(ActionEvent actionEvent) {
         if (redeNeural == null) {
-            Util.exibirMensagem("Erro", "Rede Neural não foi treinada!", javafx.scene.control.Alert.AlertType.ERROR);
+            Util.exibirMensagem("Erro", "Rede Neural não foi treinada!", Alert.AlertType.ERROR);
         }
         else{
             redeNeural.testar(tableViewTestes);
