@@ -37,7 +37,7 @@ public class HelloController {
         //TODO: pegar valores dos campos da tela, se nao houver, enviar valores padrao
         //exemplo padrao: new RedeNeural(qtdeEntrada, qtdeSaida, 0, 0.001, 2000, "linear", 1, true, true);//exemplo pdf
 
-        redeNeural = new RedeNeural(qtdeEntrada, qtdeSaida, 0, 0.00001, 2000, "linear", 1, true, false);
+        redeNeural = new RedeNeural(qtdeEntrada, qtdeSaida, 0, 0.001, 2000, "linear", 0.5, true, false);
     }
 
     public void onChooseFileButtonClick(ActionEvent actionEvent) {
