@@ -86,22 +86,35 @@ public class RedeNeural implements Cloneable{
             RedeNeural estadoAnterior = this.clone();
             //Matriz de confusao
             int[][] matrizConfusao = new int[qtdeSaidas][qtdeSaidas];
-            for(ObservableList<String> linha : tabelaTestes.getItems()){
-                voltaAoEstadoAnterior(estadoAnterior);
+            int ultimaPos = tabelaTestes.getItems().get(0).size() - 1;
+            for (ObservableList<String> linha : tabelaTestes.getItems()) {
+                voltaAoEstadoAnterior(estadoAnterior); // Restaura o estado anterior antes de testar
                 calculaNetCamadaOculta(linha);
-                calculaICamada(neuroniosOcultos);//calculaI da camada oculta
+                calculaICamada(neuroniosOcultos);
                 calculaNetCamadaSaida();
-                calculaICamada(neuroniosSaida);//calculaI da camada de saida
-                int classe = 0;
-                double maior = 0.0;
-                for(int i = 0; i < qtdeSaidas; i++){
-                    if(neuroniosSaida.get(i).getI() > maior){
-                        maior = neuroniosSaida.get(i).getI();
-                        classe = i;
+                calculaICamada(neuroniosSaida);
+                calculaErroCamadaSaida();
+
+                // Identificação da classe
+                double menorErro = neuroniosSaida.get(0).getErro();
+                int pos = 0;
+
+                for (int k = 1; k < neuroniosSaida.size(); k++) {
+                    Neuronio n = neuroniosSaida.get(k);
+                    if (n.getErro() < menorErro) {
+                        menorErro = n.getErro();
+                        pos = k;
                     }
                 }
-                int classeDesejada = Integer.parseInt(linha.get(linha.size()-1));
-                matrizConfusao[classeDesejada][classe]++;
+
+                int classeDesejada = Integer.parseInt(linha.get(ultimaPos).toString()); // Classe desejada da linha de teste
+                int classeIdentificada = pos + 1; // Classe identificada (considerando que o índice começa em 0)
+
+                if (classeDesejada == classeIdentificada) {
+                    System.out.println("Classe " + classeDesejada + " foi identificada corretamente como " + classeIdentificada + "!");
+                } else {
+                    System.out.println("Classe " + classeDesejada + " foi identificada incorretamente como " + classeIdentificada + ".");
+                }
             }
 
             System.out.println("Matriz de Confusão:");
