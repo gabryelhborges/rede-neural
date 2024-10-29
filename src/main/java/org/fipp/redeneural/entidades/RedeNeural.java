@@ -6,7 +6,7 @@ import javafx.scene.control.TableView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RedeNeural {
+public class RedeNeural implements Cloneable{
     private int qtdeEntradas;
     private int qtdeCamadasOcultas;
     private int qtdeSaidas;
@@ -37,6 +37,21 @@ public class RedeNeural {
     11- Calcula o erro da rede
     - Aplicar os passos 2 a 11 ate que o erro da rede seja menor que o limiar ou o numero de epocas seja atingido
     */
+
+    @Override
+    protected RedeNeural clone() throws CloneNotSupportedException {
+        try {
+            RedeNeural cloned = (RedeNeural) super.clone();
+            cloned.neuroniosEntrada = new ArrayList<>(this.neuroniosEntrada);
+            cloned.neuroniosOcultos = new ArrayList<>(this.neuroniosOcultos);
+            cloned.neuroniosSaida = new ArrayList<>(this.neuroniosSaida);
+            // Clone other mutable fields if necessary
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Should never happen
+        }
+    }
+
     public RedeNeural(int qtdeEntradas, int qtdeSaidas, int qtdeCamadasOcultas, double limiar, int epocas, String funcaoTransferencia, double taxaAprendizagem, boolean aritmetica, boolean criterioParada) {
         this.qtdeEntradas = qtdeEntradas;
         this.qtdeSaidas = qtdeSaidas;
@@ -67,20 +82,53 @@ public class RedeNeural {
     }
 
     public void testar(TableView<ObservableList<String>> tabelaTestes) {
-        // matriz de confusão
-        int[][] matrizConfusao = new int[qtdeSaidas][qtdeSaidas];
-        for (ObservableList<String> linha : tabelaTestes.getItems()) {
-
-        }
-
-        // exibe a matriz de confusão
-        System.out.println("Matriz de Confusão:");
-        for (int i = 0; i < qtdeSaidas; i++) {
-            for (int j = 0; j < qtdeSaidas; j++) {
-                System.out.print(matrizConfusao[i][j] + " ");
+        try {
+            RedeNeural estadoAnterior = this.clone();
+            //Matriz de confusao
+            int[][] matrizConfusao = new int[qtdeSaidas][qtdeSaidas];
+            for(ObservableList<String> linha : tabelaTestes.getItems()){
+                voltaAoEstadoAnterior(estadoAnterior);
+                calculaNetCamadaOculta(linha);
+                calculaICamada(neuroniosOcultos);//calculaI da camada oculta
+                calculaNetCamadaSaida();
+                calculaICamada(neuroniosSaida);//calculaI da camada de saida
+                int classe = 0;
+                double maior = 0.0;
+                for(int i = 0; i < qtdeSaidas; i++){
+                    if(neuroniosSaida.get(i).getI() > maior){
+                        maior = neuroniosSaida.get(i).getI();
+                        classe = i;
+                    }
+                }
+                int classeDesejada = Integer.parseInt(linha.get(linha.size()-1));
+                matrizConfusao[classeDesejada][classe]++;
             }
-            System.out.println();
+
+            System.out.println("Matriz de Confusão:");
+            for (int i = 0; i < qtdeSaidas; i++) {
+                for (int j = 0; j < qtdeSaidas; j++) {
+                    System.out.print(matrizConfusao[i][j] + " ");
+                }
+                System.out.println();
+            }
         }
+        catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void voltaAoEstadoAnterior(RedeNeural estadoAnterior) {
+        this.qtdeEntradas = estadoAnterior.qtdeEntradas;
+        this.qtdeCamadasOcultas = estadoAnterior.qtdeCamadasOcultas;
+        this.qtdeSaidas = estadoAnterior.qtdeSaidas;
+        this.taxaAprendizagem = estadoAnterior.taxaAprendizagem;
+        this.limiar = estadoAnterior.limiar;
+        this.epocas = estadoAnterior.epocas;
+        this.funcaoTransferencia = estadoAnterior.funcaoTransferencia;
+        this.neuroniosEntrada = estadoAnterior.neuroniosEntrada;
+        this.neuroniosOcultos = estadoAnterior.neuroniosOcultos;
+        this.neuroniosSaida = estadoAnterior.neuroniosSaida;
+        this.criterioParada = estadoAnterior.criterioParada;
     }
 
     private void treinarPorEpocas(TableView<ObservableList<String>> tabela) {
