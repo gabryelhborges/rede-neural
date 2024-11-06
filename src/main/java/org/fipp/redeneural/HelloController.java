@@ -4,10 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -18,17 +16,40 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
-public class HelloController {
+public class HelloController implements Initializable {
+
     public Button bttIniciarTreinamento;
     public Button bttIniciarTeste;
     public TableView<ObservableList<String>> tableViewTestes;
+    public TextField caminho_arquivo;
+    public TextField textField_number_entrada;
+    public TextField textField_number_saida;
+    public TextField textField_number_oculta;
+    public TextField textField_valor_erro;
+    public TextField textField_number_interacoes;
+    public TextField textField_n;
+    public CheckBox checkbox_linear;
+    public CheckBox checkbox_logistica;
+    public CheckBox checkbox_hiperbolica;
     @FXML
     private TableView<ObservableList<String>> tableView;//tabela treinamento
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
     private List<String> listaClasses;
     private RedeNeural redeNeural;
+    public String funcaTransferencia;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        textField_n.setText("1");
+        textField_number_interacoes.setText("2000");
+        textField_valor_erro.setText("0.00001");
+        textField_number_oculta.setText("8");
+        checkbox_linear.setSelected(true);
+        funcaTransferencia = "linear";
+    }
 
     private void criaRedeNeural() {
         //-1 pra nao incluir a coluna da classe
@@ -42,13 +63,22 @@ public class HelloController {
     }
 
     public void onChooseFileButtonClick(ActionEvent actionEvent) {
+        textField_number_entrada.setDisable(false);
+        textField_number_saida.setDisable(false);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home"), "Downloads"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
         File selectedFile = fileChooser.showOpenDialog(new Stage());
         if (selectedFile != null) {
             loadCSVFile(selectedFile, tableView);
+            int qtdeEntrada = tableView.getColumns().size() - 1;
+            int qtdeSaida = listaClasses.size();
+            textField_number_entrada.setText(String.valueOf(qtdeEntrada));
+            textField_number_saida.setText(String.valueOf(qtdeSaida));
+            textField_number_entrada.setDisable(true);
+            textField_number_saida.setDisable(true);
         }
+        caminho_arquivo.setText(selectedFile.getAbsolutePath());
     }
 
     private void loadCSVFile(File file, TableView<ObservableList<String>> tableView) {
@@ -194,4 +224,24 @@ public class HelloController {
             loadCSVFile(selectedFile, tableViewTestes);
         }
     }
+
+    public void onChangeFuncaoTransferencia(ActionEvent actionEvent) {
+        for (int i = 0; i<2;i++ ){
+            if (checkbox_hiperbolica.isSelected()) {
+                checkbox_logistica.setSelected(false);
+                checkbox_linear.setSelected(false);
+                funcaTransferencia = "hiperbolica";
+            } else if (checkbox_logistica.isSelected()) {
+                checkbox_hiperbolica.setSelected(false);
+                checkbox_linear.setSelected(false);
+                funcaTransferencia = "logistica";
+            } else if (checkbox_linear.isSelected()) {
+                checkbox_hiperbolica.setSelected(false);
+                checkbox_logistica.setSelected(false);
+                funcaTransferencia = "linear";
+            }
+        }
+
+    }
+
 }
