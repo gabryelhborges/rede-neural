@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 
 
-<VBox fx:id="vbox" alignment="CENTER_LEFT" style="-fx-background-color: rgb(60, 60, 60);" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.fipp.redeneural.MainPageController">
-
-</VBox>
+<BorderPane fx:id="BorderPane_MainPage" style="-fx-background-color: rgb(60, 60, 60);" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.fipp.redeneural.MainPageController">
+   <top>
+      <HBox BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="btnTreining" mnemonicParsing="false" onAction="#onTrainig" text="Treinamento" />
+            <Button fx:id="btnTest" mnemonicParsing="false" onAction="#onTest" text="Teste" />
+         </children>
+      </HBox>
+   </top>
+</BorderPane>

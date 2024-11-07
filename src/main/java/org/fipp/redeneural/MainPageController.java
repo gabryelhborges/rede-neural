@@ -2,58 +2,80 @@ package org.fipp.redeneural;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import org.fipp.redeneural.HelloApplication;
+import org.fipp.redeneural.entidades.RedeNeural;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainPageController implements Initializable {
-    public VBox vbox;
+
+    public static BorderPane staticpane;
+    public BorderPane BorderPane_MainPage;
+    public Button btnTreining;
+    public Button btnTest;
+
+    private RedeNeural redeNeural;
+
+    public String getCaminho() {
+        return caminho;
+    }
+
+    public void setCaminho(String caminho) {
+        this.caminho = caminho;
+    }
+
+    public String caminho;
+
+
+    public RedeNeural getRedeNeural() {
+        return redeNeural;
+    }
+
+    public void setRedeNeural(RedeNeural redeNeural) {
+        this.redeNeural = redeNeural;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadInitialContent();
-        vbox.sceneProperty().addListener(new ChangeListener<Scene>() {
-            @Override
-            public void changed(ObservableValue<? extends Scene> observable, Scene oldScene, Scene newScene) {
-                if (newScene != null) {
-                    // Adiciona o EventHandler para substituir o conteúdo ao pressionar Enter
-                    newScene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-                        if (event.getCode().toString().equals("ENTER")) {
-                            replaceContent();
-                        }
-                    });
-                }
+        staticpane = BorderPane_MainPage;
+        if(redeNeural==null){
+            loadPage("presentation_page.fxml");
+        }
+    }
+
+    // Função genérica para carregar uma página e substituir o conteúdo do VBox
+    private void loadPage(String fxmlFileName) {
+        try {
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(fxmlFileName));
+            VBox page = loader.load();
+
+            if ("training_page.fxml".equals(fxmlFileName)) {
+                TrainingPageController trainingController = loader.getController();
+                trainingController.setMainPageController(this); // Passa a si próprio (this)
             }
-        });
-    }
 
-    private void loadInitialContent() {
-        try {
-            FXMLLoader presentation = new FXMLLoader(HelloApplication.class.getResource("presentation_page.fxml"));
-            presentation.load();
-            vbox.getChildren().clear();
-            vbox.getChildren().add(presentation.getRoot());
+            staticpane.setCenter(page);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao carregar a página: " + fxmlFileName, e);
         }
     }
+    public void onTrainig(ActionEvent actionEvent) {
+        loadPage("training_page.fxml");
+    }
 
-    private void replaceContent() {
-        try {
-            FXMLLoader presentation = new FXMLLoader(MainPageController.class.getResource("training_page.fxml"));
-            presentation.load();
-            vbox.getChildren().clear();
-            vbox.getChildren().add(presentation.getRoot());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void onTest(ActionEvent actionEvent) {
+        loadPage("test_page.fxml");
+    }
+    public void teste(){
+        loadPage("test_page.fxml");
     }
 }
