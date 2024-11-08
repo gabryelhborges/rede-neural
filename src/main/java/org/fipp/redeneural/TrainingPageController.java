@@ -46,12 +46,13 @@ public class TrainingPageController extends MainPageController{
         this.mainPageController = mainPageController;
 
         redeNeural = mainPageController.getRedeNeural();
-        caminho = mainPageController.getCaminho();
+        caminho = mainPageController.getCaminhoTreino();
         if(caminho != null){
             textField_number_entrada.setDisable(false);
             textField_number_saida.setDisable(false);
             File selectedFile = new File(caminho);
-            carregarTabela(selectedFile);}
+            carregarTabela(selectedFile);
+        }
 
     }
 
@@ -233,8 +234,9 @@ public class TrainingPageController extends MainPageController{
         criaRedeNeural();
         redeNeural.treinar(tableView);
         Util.exibirMensagem("Treinamento", "Treinamento concluído com sucesso!", Alert.AlertType.INFORMATION);
-        mainPageController.setCaminho(caminho_arquivo.getText());
+        mainPageController.setCaminhoTreino(caminho_arquivo.getText());
         mainPageController.setRedeNeural(redeNeural);
+        mainPageController.teste();
     }
 
     public void onChangeFuncaoTransferencia(ActionEvent actionEvent) {

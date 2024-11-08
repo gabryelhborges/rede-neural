@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import org.fipp.redeneural.entidades.RedeNeural;
 
 import java.io.IOException;
@@ -22,19 +23,28 @@ public class MainPageController implements Initializable {
     public BorderPane BorderPane_MainPage;
     public Button btnTreining;
     public Button btnTest;
+    public Text textOrientador;
+    public Button btnVizualizarRedeNeural;
 
     private RedeNeural redeNeural;
+    public String caminhoTreino;
+    public String caminhoTeste;
 
-    public String getCaminho() {
-        return caminho;
+    public String getCaminhoTreino() {
+        return caminhoTreino;
     }
 
-    public void setCaminho(String caminho) {
-        this.caminho = caminho;
+    public void setCaminhoTreino(String caminhoTreino) {
+        this.caminhoTreino = caminhoTreino;
     }
 
-    public String caminho;
+    public String getCaminhoTeste() {
+        return caminhoTeste;
+    }
 
+    public void setCaminhoTeste(String caminhoTeste) {
+        this.caminhoTeste = caminhoTeste;
+    }
 
     public RedeNeural getRedeNeural() {
         return redeNeural;
@@ -67,6 +77,7 @@ public class MainPageController implements Initializable {
         loadPage(loader);
         TrainingPageController trainingController = loader.getController();
         trainingController.setMainPageController(this);
+        textOrientador.setText("TREINAMENTO");
     }
 
     public void onTest(ActionEvent actionEvent) {
@@ -77,5 +88,14 @@ public class MainPageController implements Initializable {
         loadPage(loader);
         TestPageController testController = loader.getController();
         testController.setMainPageController(this);
+        textOrientador.setText("TESTE");
+    }
+
+    public void onVizualizarRedeNeutal(ActionEvent actionEvent) {
+        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("rede_neural_page.fxml"));
+        loadPage(loader);
+        RedeNeuralPageController redeNeuralPageController = loader.getController();
+        redeNeuralPageController.setMainPageController(this);
+        textOrientador.setText("REDE NEURAL");
     }
 }

@@ -23,11 +23,17 @@ public class TestPageController implements Initializable {
     private List<String> listaClasses;
     private RedeNeural redeNeural;
     private MainPageController mainPageController;
+    private String caminho;
 
     public void setMainPageController(MainPageController mainPageController) {
         this.mainPageController = mainPageController;
 
         redeNeural = mainPageController.getRedeNeural();
+        caminho = mainPageController.getCaminhoTeste();
+        if(caminho != null){
+            File selectedFile = new File(caminho);
+            carregarTabela(selectedFile);
+        }
     }
 
     @Override
@@ -46,8 +52,8 @@ public class TestPageController implements Initializable {
     private void carregarTabela(File selectedFile){
         if (selectedFile != null) {
             loadCSVFile(selectedFile, tableView);
-
         }
+        caminho_arquivo.setText(selectedFile.getAbsolutePath());
     }
 
     private void loadCSVFile(File file, TableView<ObservableList<String>> tableView) {
@@ -175,7 +181,12 @@ public class TestPageController implements Initializable {
         }
         else{
             redeNeural.testar(tableView);
+            mainPageController.setCaminhoTeste(caminho_arquivo.getText());
         }
+    }
+
+    public void btnReloadtable(ActionEvent actionEvent) {
+        carregarTabela(new File(caminho));
     }
 
 }
