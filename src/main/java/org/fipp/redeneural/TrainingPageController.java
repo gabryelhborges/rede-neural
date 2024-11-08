@@ -4,10 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.fipp.redeneural.entidades.RedeNeural;
@@ -20,11 +18,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class HelloController implements Initializable {
-
+public class TrainingPageController extends MainPageController{
     public Button bttIniciarTreinamento;
-    public Button bttIniciarTeste;
-    public TableView<ObservableList<String>> tableViewTestes;
     public TextField caminho_arquivo;
     public TextField textField_number_entrada;
     public TextField textField_number_saida;
@@ -41,11 +36,29 @@ public class HelloController implements Initializable {
     private TableView<ObservableList<String>> tableView;//tabela treinamento
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
     private List<String> listaClasses;
+    private String caminho;
     private RedeNeural redeNeural;
     public String funcaTransferencia;
-
     public boolean criterioParad;
+    private MainPageController mainPageController;
 
+    public void setMainPageController(MainPageController mainPageController) {
+        this.mainPageController = mainPageController;
+
+        redeNeural = mainPageController.getRedeNeural();
+        caminho = mainPageController.getCaminhoTreino();
+        if(caminho != null){
+            textField_number_entrada.setDisable(false);
+            textField_number_saida.setDisable(false);
+            File selectedFile = new File(caminho);
+            carregarTabela(selectedFile);
+        }
+
+    }
+
+    public void setRedeNeural(RedeNeural redeNeural) {
+        this.redeNeural = redeNeural;
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         textField_n.setText("1");
@@ -82,6 +95,10 @@ public class HelloController implements Initializable {
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home"), "Downloads"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
         File selectedFile = fileChooser.showOpenDialog(new Stage());
+        carregarTabela(selectedFile);
+    }
+
+    private void carregarTabela(File selectedFile){
         if (selectedFile != null) {
             loadCSVFile(selectedFile, tableView);
             int qtdeEntrada = tableView.getColumns().size() - 1;
@@ -217,25 +234,9 @@ public class HelloController implements Initializable {
         criaRedeNeural();
         redeNeural.treinar(tableView);
         Util.exibirMensagem("Treinamento", "Treinamento concluído com sucesso!", Alert.AlertType.INFORMATION);
-    }
-
-    public void onIniciarTestesClick(ActionEvent actionEvent) {
-        if (redeNeural == null) {
-            Util.exibirMensagem("Erro", "Rede Neural não foi treinada!", Alert.AlertType.ERROR);
-        }
-        else{
-            redeNeural.testar(tableViewTestes);
-        }
-    }
-
-    public void onSelecionarArquivoTestes(ActionEvent actionEvent) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home"), "Downloads"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
-        File selectedFile = fileChooser.showOpenDialog(new Stage());
-        if (selectedFile != null) {
-            loadCSVFile(selectedFile, tableViewTestes);
-        }
+        mainPageController.setCaminhoTreino(caminho_arquivo.getText());
+        mainPageController.setRedeNeural(redeNeural);
+        mainPageController.teste();
     }
 
     public void onChangeFuncaoTransferencia(ActionEvent actionEvent) {
@@ -262,5 +263,9 @@ public class HelloController implements Initializable {
             checkBox_erro.setSelected(false);
             criterioParad = true;
         }
+    }
+
+    public void btnReloadtable(ActionEvent actionEvent) {
+        carregarTabela(new File(caminho));
     }
 }

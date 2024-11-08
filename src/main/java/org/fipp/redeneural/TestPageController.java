@@ -3,93 +3,55 @@ package org.fipp.redeneural;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.fipp.redeneural.entidades.RedeNeural;
 import org.fipp.redeneural.entidades.Util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 
-public class HelloController implements Initializable {
-
-    public Button bttIniciarTreinamento;
-    public Button bttIniciarTeste;
-    public TableView<ObservableList<String>> tableViewTestes;
+public class TestPageController implements Initializable {
+    public TableView tableView;
+    public Button bttIniciarTournament;
     public TextField caminho_arquivo;
-    public TextField textField_number_entrada;
-    public TextField textField_number_saida;
-    public TextField textField_number_oculta;
-    public TextField textField_valor_erro;
-    public TextField textField_number_interacoes;
-    public TextField textField_n;
-    public CheckBox checkbox_linear;
-    public CheckBox checkbox_logistica;
-    public CheckBox checkbox_hiperbolica;
-    public CheckBox checkBox_erro;
-    public CheckBox checkbox_interact;
-    @FXML
-    private TableView<ObservableList<String>> tableView;//tabela treinamento
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
     private List<String> listaClasses;
     private RedeNeural redeNeural;
-    public String funcaTransferencia;
+    private MainPageController mainPageController;
+    private String caminho;
 
-    public boolean criterioParad;
+    public void setMainPageController(MainPageController mainPageController) {
+        this.mainPageController = mainPageController;
+
+        redeNeural = mainPageController.getRedeNeural();
+        caminho = mainPageController.getCaminhoTeste();
+        if(caminho != null){
+            File selectedFile = new File(caminho);
+            carregarTabela(selectedFile);
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        textField_n.setText("1");
-        textField_number_interacoes.setText("2000");
-        textField_valor_erro.setText("0.00001");
-        textField_number_oculta.setText("8");
-        checkbox_linear.setSelected(true);
-        funcaTransferencia = "linear";
-        checkBox_erro.setSelected(true);
-        criterioParad = true;
-    }
 
-    private void criaRedeNeural() {
-        //-1 pra nao incluir a coluna da classe
-
-        //int qtdeEntrada = Integer.parseInt(textField_number_entrada.getText());
-        //int qtdeSaida = listaClasses.size();
-
-        //TODO: pegar valores dos campos da tela, se nao houver, enviar valores padrao
-        //exemplo padrao: new RedeNeural(qtdeEntrada, qtdeSaida, 0, 0.001, 2000, "linear", 1, true, true);//exemplo pdf
-
-        redeNeural = new RedeNeural(  Integer.parseInt(textField_number_entrada.getText()),
-                Integer.parseInt(textField_number_saida.getText()),
-                Integer.parseInt(textField_number_oculta.getText()),
-                Double.parseDouble(textField_valor_erro.getText()),
-                Integer.parseInt(textField_number_interacoes.getText()),
-                funcaTransferencia, Integer.parseInt(textField_n.getText()), true, criterioParad);
     }
 
     public void onChooseFileButtonClick(ActionEvent actionEvent) {
-        textField_number_entrada.setDisable(false);
-        textField_number_saida.setDisable(false);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home"), "Downloads"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
         File selectedFile = fileChooser.showOpenDialog(new Stage());
+        carregarTabela(selectedFile);
+    }
+
+    private void carregarTabela(File selectedFile){
         if (selectedFile != null) {
             loadCSVFile(selectedFile, tableView);
-            int qtdeEntrada = tableView.getColumns().size() - 1;
-            int qtdeSaida = listaClasses.size();
-            textField_number_entrada.setText(String.valueOf(qtdeEntrada));
-            textField_number_saida.setText(String.valueOf(qtdeSaida));
-            textField_number_entrada.setDisable(true);
-            textField_number_saida.setDisable(true);
         }
         caminho_arquivo.setText(selectedFile.getAbsolutePath());
     }
@@ -214,53 +176,17 @@ public class HelloController implements Initializable {
     }
 
     public void onIniciarTreinamentoClick(ActionEvent actionEvent) {
-        criaRedeNeural();
-        redeNeural.treinar(tableView);
-        Util.exibirMensagem("Treinamento", "Treinamento concluído com sucesso!", Alert.AlertType.INFORMATION);
-    }
-
-    public void onIniciarTestesClick(ActionEvent actionEvent) {
         if (redeNeural == null) {
             Util.exibirMensagem("Erro", "Rede Neural não foi treinada!", Alert.AlertType.ERROR);
         }
         else{
-            redeNeural.testar(tableViewTestes);
+            redeNeural.testar(tableView);
+            mainPageController.setCaminhoTeste(caminho_arquivo.getText());
         }
     }
 
-    public void onSelecionarArquivoTestes(ActionEvent actionEvent) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home"), "Downloads"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
-        File selectedFile = fileChooser.showOpenDialog(new Stage());
-        if (selectedFile != null) {
-            loadCSVFile(selectedFile, tableViewTestes);
-        }
+    public void btnReloadtable(ActionEvent actionEvent) {
+        carregarTabela(new File(caminho));
     }
 
-    public void onChangeFuncaoTransferencia(ActionEvent actionEvent) {
-        if (checkbox_hiperbolica.isSelected()) {
-            checkbox_logistica.setSelected(false);
-            checkbox_linear.setSelected(false);
-            funcaTransferencia = "hiperbolica";
-        } else if (checkbox_logistica.isSelected()) {
-            checkbox_hiperbolica.setSelected(false);
-            checkbox_linear.setSelected(false);
-            funcaTransferencia = "logistica";
-        } else if (checkbox_linear.isSelected()) {
-            checkbox_hiperbolica.setSelected(false);
-            checkbox_logistica.setSelected(false);
-            funcaTransferencia = "linear";
-        }
-    }
-
-    public void onChangeCreterioParada(ActionEvent actionEvent) {
-        if(checkBox_erro.isSelected()){
-            checkbox_interact.setSelected(false);
-            criterioParad = false;
-        }else{
-            checkBox_erro.setSelected(false);
-            criterioParad = true;
-        }
-    }
 }
