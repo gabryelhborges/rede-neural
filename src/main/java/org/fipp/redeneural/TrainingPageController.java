@@ -47,6 +47,12 @@ public class TrainingPageController extends MainPageController{
 
         redeNeural = mainPageController.getRedeNeural();
         caminho = mainPageController.getCaminho();
+        if(caminho != null){
+            textField_number_entrada.setDisable(false);
+            textField_number_saida.setDisable(false);
+            File selectedFile = new File(caminho);
+            carregarTabela(selectedFile);}
+
     }
 
     public void setRedeNeural(RedeNeural redeNeural) {
@@ -54,11 +60,6 @@ public class TrainingPageController extends MainPageController{
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        if(caminho!=null){
-            caminho_arquivo.setText(caminho);
-
-        }
         textField_n.setText("1");
         textField_number_interacoes.setText("2000");
         textField_valor_erro.setText("0.00001");
@@ -233,7 +234,7 @@ public class TrainingPageController extends MainPageController{
         redeNeural.treinar(tableView);
         Util.exibirMensagem("Treinamento", "Treinamento concluído com sucesso!", Alert.AlertType.INFORMATION);
         mainPageController.setCaminho(caminho_arquivo.getText());
-        mainPageController.teste();
+        mainPageController.setRedeNeural(redeNeural);
     }
 
     public void onChangeFuncaoTransferencia(ActionEvent actionEvent) {
@@ -260,5 +261,9 @@ public class TrainingPageController extends MainPageController{
             checkBox_erro.setSelected(false);
             criterioParad = true;
         }
+    }
+
+    public void btnReloadtable(ActionEvent actionEvent) {
+        carregarTabela(new File(caminho));
     }
 }

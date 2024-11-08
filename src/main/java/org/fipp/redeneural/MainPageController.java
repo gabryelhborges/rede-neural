@@ -48,34 +48,34 @@ public class MainPageController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         staticpane = BorderPane_MainPage;
         if(redeNeural==null){
-            loadPage("presentation_page.fxml");
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("presentation_page.fxml"));
+            loadPage(loader);
         }
     }
 
     // Função genérica para carregar uma página e substituir o conteúdo do VBox
-    private void loadPage(String fxmlFileName) {
+    private void loadPage(FXMLLoader loader) {
         try {
-            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(fxmlFileName));
             VBox page = loader.load();
-
-            if ("training_page.fxml".equals(fxmlFileName)) {
-                TrainingPageController trainingController = loader.getController();
-                trainingController.setMainPageController(this); // Passa a si próprio (this)
-            }
-
             staticpane.setCenter(page);
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao carregar a página: " + fxmlFileName, e);
+            throw new RuntimeException("Erro ao carregar a página: " +  e);
         }
     }
     public void onTrainig(ActionEvent actionEvent) {
-        loadPage("training_page.fxml");
+        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("training_page.fxml"));
+        loadPage(loader);
+        TrainingPageController trainingController = loader.getController();
+        trainingController.setMainPageController(this);
     }
 
     public void onTest(ActionEvent actionEvent) {
-        loadPage("test_page.fxml");
+        teste();
     }
     public void teste(){
-        loadPage("test_page.fxml");
+        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("test_page.fxml"));
+        loadPage(loader);
+        TestPageController testController = loader.getController();
+        testController.setMainPageController(this);
     }
 }
