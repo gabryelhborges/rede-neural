@@ -26,7 +26,16 @@ public class RedeNeuralPageController {
         }
     }
 
-    public void DesenharNeuronio(RedeNeural redeNeural){
+    private int RetornoMaior(int a,int b,int c){
+        if(a>b && a>c)
+            return a;
+        else if (b>a && b>c)
+            return b;
+        else
+            return c;
+    }
+
+    private void DesenharNeuronio(RedeNeural redeNeural){
         vboxMain.getChildren().clear(); // Limpa o conteúdo anterior
 
         // Painel principal onde desenhamos os neurônios e as conexões
@@ -36,6 +45,11 @@ public class RedeNeuralPageController {
         List<Neuronio> neuroniosEntrada = redeNeural.getNeuroniosEntrada();
         List<Neuronio> neuroniosOcultos = redeNeural.getNeuroniosOcultos();
         List<Neuronio> neuroniosSaida = redeNeural.getNeuroniosSaida();
+
+        int maior_quantidade_neuronios_camada = RetornoMaior(neuroniosEntrada.size(), neuroniosOcultos.size(), neuroniosSaida.size());
+
+        System.out.println();
+
 
         // Cria visualmente cada camada de neurônios e armazena os círculos para conectar
         List<Circle> circulosEntrada = criarCamadaVisual(pane, neuroniosEntrada, "Entrada", 100);
@@ -59,7 +73,7 @@ public class RedeNeuralPageController {
         // Desenha cada neurônio da camada
         double yPosition = 100;
         for (Neuronio neuronio : neuronios) {
-            Circle circuloNeuronio = new Circle(xPosition, yPosition, 20, Color.LIGHTBLUE); // Neurônio visual
+            Circle circuloNeuronio = new Circle(xPosition, yPosition, 20, Color.LIGHTGRAY); // Neurônio visual
             pane.getChildren().add(circuloNeuronio);
             circulos.add(circuloNeuronio);
             yPosition += 50; // Ajuste a posição vertical para o próximo neurônio
@@ -67,6 +81,7 @@ public class RedeNeuralPageController {
 
         // Adiciona um título para a camada
         Text camadaTitulo = new Text(xPosition - 20, 50, tipoCamada);
+        camadaTitulo.setFill(Color.WHITE);
         pane.getChildren().add(camadaTitulo);
 
         return circulos;
