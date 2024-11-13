@@ -18,7 +18,6 @@ public class RedeNeural{
     private List<Neuronio> neuroniosOcultos;
     private List<Neuronio> neuroniosSaida;
     private boolean criterioParada;//true para epocas e false para erro
-
     private List<String> listaClasses;
     /*
     - A rede neural eh estimulada por um ambiente
