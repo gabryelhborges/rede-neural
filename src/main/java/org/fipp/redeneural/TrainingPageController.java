@@ -85,7 +85,7 @@ public class TrainingPageController extends MainPageController{
                 Integer.parseInt(textField_number_oculta.getText()),
                 Double.parseDouble(textField_valor_erro.getText()),
                 Integer.parseInt(textField_number_interacoes.getText()),
-                funcaTransferencia, Integer.parseInt(textField_n.getText()), true, criterioParad, listaClasses);
+                funcaTransferencia, Double.parseDouble(textField_n.getText()), true, criterioParad, listaClasses);
     }
 
     public void onChooseFileButtonClick(ActionEvent actionEvent) {
@@ -126,6 +126,7 @@ public class TrainingPageController extends MainPageController{
                 }
                 tableView.setItems(data);
                 ajustaLarguraColunas(tableView);
+
                 normalizarTabela(tableView);
             }
         } catch (IOException e) {

@@ -347,7 +347,7 @@ public class RedeNeural{
     private double derivadaFuncaoSaida(double net, String funcao){
         double i, fnet;
         if(funcao.equals("linear")){
-            i = 1.0 / 10;
+            i = 0.1;
         }
         else if(funcao.equals("logistica")){
             fnet = funcaoSaida(net,funcao);
@@ -363,7 +363,7 @@ public class RedeNeural{
 
     private int calcularQtdeCamadasOcultas(boolean aritmetica) {
         if(aritmetica){
-            return (qtdeEntradas + qtdeSaidas) / 2;//aritmetica
+            return 1 + (qtdeEntradas + qtdeSaidas) / 2;//aritmetica
         } else {
             return (int) Math.sqrt(qtdeEntradas * qtdeSaidas);//geometrica
         }
