@@ -14,7 +14,6 @@ public class Neuronio {
     }
 
     public Neuronio(){
-        this.net = 0;
         conexoes = new ArrayList<>();
     }
 
