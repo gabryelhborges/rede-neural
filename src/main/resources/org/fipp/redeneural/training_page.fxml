@@ -179,6 +179,23 @@
             <children>
                <Button mnemonicParsing="false" onAction="#onChooseFileButtonClick" text="Carregar Arquivo" />
                <TextField fx:id="caminho_arquivo" disable="true" prefHeight="25.0" prefWidth="798.0" />
+               <VBox alignment="CENTER_LEFT">
+                  <children>
+                     <Label text="\% do arquivo que deseja" textFill="WHITE">
+                        <font>
+                           <Font size="18.0" />
+                        </font>
+                     </Label>
+                     <VBox alignment="CENTER" spacing="5.0" style="-fx-border-color: White; -fx-border-radius: 10;">
+                        <children>
+                           <TextField fx:id="tfPorcentagem" promptText="Digite a porcentagem (1-100)" onKeyReleased="#atualizarPorcentagem" />
+                        </children>
+                        <padding>
+                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        </padding>
+                     </VBox>
+                  </children>
+               </VBox>
             </children>
          </HBox>
       </children>
