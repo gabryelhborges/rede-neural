@@ -32,25 +32,19 @@ public class MainPageController implements Initializable {
     public String caminhoTeste;
     private String[] headers;
     public int porcentagem;
-
+    public ObservableList<ObservableList<String>> dataTeste;
     public String[] getHeaders() {
         return headers;
     }
-
     public void setHeaders(String[] headers) {
         this.headers = headers;
     }
-
-    public ObservableList<ObservableList<String>> dataTeste;
-
     public ObservableList<ObservableList<String>> getDataTeste() {
         return dataTeste;
     }
-
     public void setDataTeste(ObservableList<ObservableList<String>> dataTeste) {
         this.dataTeste = dataTeste;
     }
-
     public void setPorcentagem(int porcentagem) {
         this.porcentagem = porcentagem;
     }
@@ -59,31 +53,24 @@ public class MainPageController implements Initializable {
             return 100;
         return porcentagem;
     }
-
     public String getCaminhoTreino() {
         return caminhoTreino;
     }
-
     public void setCaminhoTreino(String caminhoTreino) {
         this.caminhoTreino = caminhoTreino;
     }
-
     public String getCaminhoTeste() {
         return caminhoTeste;
     }
-
     public void setCaminhoTeste(String caminhoTeste) {
         this.caminhoTeste = caminhoTeste;
     }
-
     public RedeNeural getRedeNeural() {
         return redeNeural;
     }
-
     public void setRedeNeural(RedeNeural redeNeural) {
         this.redeNeural = redeNeural;
     }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         staticpane = BorderPane_MainPage;
@@ -92,7 +79,6 @@ public class MainPageController implements Initializable {
             loadPage(loader);
         }
     }
-
     // Função genérica para carregar uma página e substituir o conteúdo do VBox
     private void loadPage(FXMLLoader loader) {
         try {
@@ -109,7 +95,6 @@ public class MainPageController implements Initializable {
         trainingController.setMainPageController(this);
         textOrientador.setText("TREINAMENTO");
     }
-
     public void onTest(ActionEvent actionEvent) {
         teste();
     }
@@ -120,7 +105,6 @@ public class MainPageController implements Initializable {
         testController.setMainPageController(this);
         textOrientador.setText("TESTE");
     }
-
     public void onVizualizarRedeNeutal(ActionEvent actionEvent) {
         FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("rede_neural_page.fxml"));
         loadPage(loader);
