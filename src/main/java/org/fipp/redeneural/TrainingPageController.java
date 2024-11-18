@@ -38,6 +38,7 @@ public class TrainingPageController extends MainPageController{
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
     private List<String> listaClasses;
     private String caminho;
+    private ObservableList<ObservableList<String>> dataTeste;
     private RedeNeural redeNeural;
     public String funcaTransferencia;
     public boolean criterioParad;
@@ -73,6 +74,8 @@ public class TrainingPageController extends MainPageController{
         checkBox_erro.setSelected(true);
         criterioParad = true;
         tfPorcentagem.setText("100");
+        porcentagem=100;
+        dataTeste = FXCollections.observableArrayList();
     }
 
     private void criaRedeNeural() {
@@ -104,7 +107,7 @@ public class TrainingPageController extends MainPageController{
 
     private void carregarTabela(File selectedFile){
         if (selectedFile != null) {
-            loadCSVFile(selectedFile, tableView, tableViewTeste);
+            loadCSVFile(selectedFile, tableView);
             int qtdeEntrada = tableView.getColumns().size() - 1;
             int qtdeSaida = listaClasses.size();
             textField_number_entrada.setText(String.valueOf(qtdeEntrada));
@@ -115,18 +118,21 @@ public class TrainingPageController extends MainPageController{
         caminho_arquivo.setText(selectedFile.getAbsolutePath());
     }
 
-    private void loadCSVFile(File file, TableView<ObservableList<String>> tableView, TableView<ObservableList<String>> tableViewTeste) {
+    private void loadCSVFile(File file, TableView<ObservableList<String>> tableView) {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
-            int quantoLer = (int) file.length()*(porcentagem/100);
+            int totalLinhas = contarLinhas(file);
+
+            int quantoLer = (int) (totalLinhas * (porcentagem / 100.0));
 
             if (line != null) {
                 String[] headers = line.split(",");
                 createColumns(headers, tableView);
 
+                mainPageController.setHeaders(headers);
+
                 ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
-                ObservableList<ObservableList<String>> dataTeste = FXCollections.observableArrayList();
                 int i=0;
                 while ((line = br.readLine()) != null) {
                     String[] fields = line.split(",");
@@ -142,17 +148,26 @@ public class TrainingPageController extends MainPageController{
                 tableView.setItems(data);
                 ajustaLarguraColunas(tableView);
                 normalizarTabela(tableView);
-
-                if (porcentagem!=100){
-                    tableViewTeste.setItems(dataTeste);
-                    ajustaLarguraColunas(tableViewTeste);
-                    normalizarTabela(tableViewTeste);
-                }
+                if(porcentagem!=100)
+                    mainPageController.setDataTeste(dataTeste);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    private int contarLinhas(File file) {
+        int linhas = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            while (br.readLine() != null) {
+                linhas++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return linhas;
+    }
+
 
     private void normalizarTabela(TableView<ObservableList<String>> tableView) {
         normalizarDadosVetor(tableView);
@@ -299,19 +314,14 @@ public class TrainingPageController extends MainPageController{
             int valor = Integer.parseInt(texto);
             if (valor >= 1 && valor <= 100) {
                 porcentagem = valor; // Atualiza a variável se o valor estiver entre 1 e 100
+                mainPageController.setPorcentagem(porcentagem);
             } else {
                 tfPorcentagem.setText("100"); // Limpa o campo se o valor for inválido
+                porcentagem=100;
+                mainPageController.setPorcentagem(porcentagem);
             }
         } catch (NumberFormatException e) {
             tfPorcentagem.setText("100"); // Limpa o campo se o valor não for um número
         }
-    }
-
-    public int getPorcentagem() {
-        return porcentagem;
-    }
-
-    public TableView<ObservableList<String>> getTableViewTeste(){
-        return tableViewTeste;
     }
 }

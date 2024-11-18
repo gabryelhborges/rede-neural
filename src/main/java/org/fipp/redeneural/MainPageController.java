@@ -2,6 +2,7 @@ package org.fipp.redeneural;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -29,6 +30,35 @@ public class MainPageController implements Initializable {
     private RedeNeural redeNeural;
     public String caminhoTreino;
     public String caminhoTeste;
+    private String[] headers;
+    public int porcentagem;
+
+    public String[] getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(String[] headers) {
+        this.headers = headers;
+    }
+
+    public ObservableList<ObservableList<String>> dataTeste;
+
+    public ObservableList<ObservableList<String>> getDataTeste() {
+        return dataTeste;
+    }
+
+    public void setDataTeste(ObservableList<ObservableList<String>> dataTeste) {
+        this.dataTeste = dataTeste;
+    }
+
+    public void setPorcentagem(int porcentagem) {
+        this.porcentagem = porcentagem;
+    }
+    public int getPorcentagem(){
+        if(porcentagem==0)
+            return 100;
+        return porcentagem;
+    }
 
     public String getCaminhoTreino() {
         return caminhoTreino;

@@ -15,7 +15,7 @@
             <TextField fx:id="caminho_arquivo" disable="true" prefHeight="25.0" prefWidth="798.0" />
          </children>
       </HBox>
-      <TableView fx:id="tableView" maxHeight="1.7976931348623157E308" style="-fx-background-color: rgb(80,80,80);" />
+      <TableView fx:id="tableViewTeste" maxHeight="1.7976931348623157E308" style="-fx-background-color: rgb(80,80,80);" />
       <HBox alignment="BOTTOM_RIGHT">
          <children>
             <Button fx:id="Reload" mnemonicParsing="false" onAction="#btnReloadtable" text="Reload" />
