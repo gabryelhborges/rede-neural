@@ -1,6 +1,7 @@
 package org.fipp.redeneural.entidades;
 
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ public class RedeNeural{
 
     public void treinar(TableView<ObservableList<String>> tabela){
         double erroRede;
+        boolean flag;
+        List<Double> listaErrosRede = new ArrayList<>();
         int k = 0;
         do {
             for (ObservableList<String> linha : tabela.getItems()) {
@@ -66,8 +69,17 @@ public class RedeNeural{
             }
             erroRede = calculaErroRede();
             System.out.println("Erro da rede: " + erroRede);
+            listaErrosRede.add(erroRede);
+            flag = verificaPlato(listaErrosRede, k);
+
+            if(flag){
+                //Perguntar se deseja parar ou se deseja alterar a taxa de aprendizado
+                Util.exibirMensagem("PLATO", "Plato detectado!", Alert.AlertType.INFORMATION);
+                //provavelmente, devemos controlar quando a taxa de aprendizagem for mudada(para verificar plato somente após o "novo" numero de epocas)
+            }
+
             k++;
-        }while(erroRede > this.limiar &&  k < this.epocas);
+        }while(erroRede > this.limiar &&  k < this.epocas);//&& !flag
 
         if(erroRede < this.limiar){
             System.out.println("Erro final rede: "+erroRede);
@@ -75,6 +87,35 @@ public class RedeNeural{
         else{
             System.out.println("Número de epocas atingido");
         }
+        Util.exibirGraficoErros(listaErrosRede);
+    }
+
+
+    private boolean verificaPlato(List<Double> listaErrosRede, int posAtual) {
+        //calcula media, soma as diferencas da media e erro apresentado, calcula media (da soma) e verifica se é menor igual ao limiar
+        int intervalo = 15;
+        if (posAtual >= intervalo) {
+            int posInicialIntervalo = posAtual - intervalo;
+            double somaErros = 0.0;
+            double somaDiferencas = 0.0;
+
+            for (int i = posInicialIntervalo; i < posAtual; i++) {
+                somaErros += listaErrosRede.get(i);
+            }
+
+            double media = somaErros / intervalo;
+
+            for (int i = posInicialIntervalo; i < posAtual; i++) {
+                somaDiferencas += Math.abs(listaErrosRede.get(i) - media); // Diferença absoluta
+            }
+
+            double mediaDiferencas = somaDiferencas / intervalo;
+
+            if (mediaDiferencas <= this.limiar) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void testar(TableView<ObservableList<String>> tabelaTestes) {
