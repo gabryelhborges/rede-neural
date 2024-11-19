@@ -26,6 +26,11 @@
                      <font>
                         <Font size="18.0" />
                      </font></Button>
+                  <Button fx:id="btnTest1" mnemonicParsing="false" onAction="#onMatrizConfusao" style="-fx-background-color: rgb(60,60,60);" text="Matriz de Confusão" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
                </children>
             </HBox>
             <Text fx:id="textOrientador" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0">
