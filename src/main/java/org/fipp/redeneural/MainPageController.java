@@ -163,10 +163,13 @@ public class MainPageController implements Initializable {
     }
 
     public void onMatrizConfusao(ActionEvent actionEvent){
+        matrizConfusao();
+    }
+    public void matrizConfusao(){
         FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("matriz_confusao_page.fxml"));
         loadPage(loader);
+        textOrientador.setText("MATRIZ DE CONFUSÃO");
         MatrizConfusaoPageController matrizConfusaoPageController = loader.getController();
         matrizConfusaoPageController.setMainPageController(this);
-        textOrientador.setText("MATRIZ DE CONFUSÃO");
     }
 }

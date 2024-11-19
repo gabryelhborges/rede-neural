@@ -185,6 +185,7 @@ public class TestPageController implements Initializable {
         else{
             redeNeural.testar(tableView);
             mainPageController.setCaminhoTeste(caminho_arquivo.getText());
+            mainPageController.matrizConfusao();
         }
     }
 

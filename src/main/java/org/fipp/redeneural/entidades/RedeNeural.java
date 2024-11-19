@@ -4,8 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class RedeNeural{
     private int qtdeEntradas;
@@ -21,6 +20,16 @@ public class RedeNeural{
     private boolean criterioParada;//true para epocas e false para erro
     private List<String> listaClasses;
     private int[][] confusionMatrix;
+
+    public List<Double> getAcuracia() {
+        return acuracia;
+    }
+
+    public void setAcuracia(List<Double> acuracia) {
+        this.acuracia = acuracia;
+    }
+
+    private List<Double> acuracia;
     /*
     - A rede neural eh estimulada por um ambiente
     - A rede neural sofre modificacoes nos seus parametros livres
@@ -166,10 +175,11 @@ public class RedeNeural{
         }
         exibeMatriz(confusionMatrix);
 
+        acuracia = new ArrayList<>();
         // calcula acurácia global
         double acuraciaGlobal = (double) acertos / totalTestes * 100;
         System.out.println("Acurácia Global: " + acuraciaGlobal + "%");
-
+        acuracia.add(acuraciaGlobal);
         // calcula acurácia por classe
         for (int i = 0; i < numClasses; i++) {
             int totalClasse = 0;
@@ -182,6 +192,7 @@ public class RedeNeural{
             }
             double acuraciaClasse = (totalClasse > 0) ? (double) acertosClasse / totalClasse * 100 : 0;
             System.out.println("Acurácia da classe " + (i + 1) + ": " + acuraciaClasse + "%");//no lugar de i+1, pode ser listaClasses.get(i)
+            acuracia.add(acuraciaClasse);
         }
     }
 
