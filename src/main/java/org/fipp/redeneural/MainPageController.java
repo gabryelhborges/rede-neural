@@ -17,6 +17,7 @@ import org.fipp.redeneural.entidades.RedeNeural;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainPageController implements Initializable {
@@ -41,6 +42,15 @@ public class MainPageController implements Initializable {
     private String valor_erro;
     private String number_oculta;
     private String fucaoTransferencia;
+    private List<String> listaClasses;
+
+    public List<String> getListaClasses() {
+        return listaClasses;
+    }
+
+    public void setListaClasses(List<String> listaClasses) {
+        this.listaClasses = listaClasses;
+    }
 
     public double[] getVetMaior() {
         return vetMaior;

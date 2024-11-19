@@ -20,7 +20,7 @@
             <children>
                <VBox>
                   <children>
-                     <Label text="Configurar númros de neuronios:" textFill="WHITE">
+                     <Label text="Configurar números de neuronios:" textFill="WHITE">
                         <font>
                            <Font size="18.0" />
                         </font>

@@ -36,6 +36,7 @@ public class TestPageController implements Initializable {
         porcentagem = mainPageController.getPorcentagem();
         vetMaior = mainPageController.getVetMaior();
         vetMenor = mainPageController.getVetMenor();
+        listaClasses = mainPageController.getListaClasses();
         if(porcentagem!=100){
             tableWidth = mainPageController.getWidth();
             bttTeste.setVisible(false);
@@ -61,7 +62,7 @@ public class TestPageController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        normalizarTabela(tableViewTeste);
     }
 
     public void onChooseFileButtonClick(ActionEvent actionEvent) {
@@ -137,21 +138,12 @@ public class TestPageController implements Initializable {
 
     //alterar aqui
     public void normalizarClasse(TableView<ObservableList<String>> tableView) {
-        Set<String> classSet = new HashSet<>();
-        List<String> classValues = new ArrayList<>();
-
-        for (ObservableList<String> row : tableView.getItems()) {
-            String cellData = row.get(row.size() - 1);
-            if (classSet.add(cellData)) {
-                classValues.add(cellData);
+        for (ObservableList<String> row : tableView.getItems()){
+            String classe = row.get(row.size()-1);
+            int pos = listaClasses.indexOf(classe);
+            if(pos >= 0){
+                row.set(row.size()-1, String.valueOf(pos+1));
             }
-        }
-        setListaClasses(classValues);
-
-        for (ObservableList<String> row : tableView.getItems()) {
-            String cellData = row.get(row.size() - 1);
-            int newValue = classValues.indexOf(cellData) + 1;
-            row.set(row.size() - 1, String.valueOf(newValue));
         }
     }
 
@@ -176,7 +168,7 @@ public class TestPageController implements Initializable {
         this.listaClasses = listaClasses;
     }
 
-    public void onIniciarTreinamentoClick(ActionEvent actionEvent) {
+    public void onIniciarTreinamentoClick(ActionEvent actionEvent) {//onIniciarTesteClick
         if (redeNeural == null) {
             Util.exibirMensagem("Erro", "Rede Neural não foi treinada!", Alert.AlertType.ERROR);
         }

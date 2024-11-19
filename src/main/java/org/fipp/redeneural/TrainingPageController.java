@@ -333,6 +333,7 @@ public class TrainingPageController extends MainPageController{
 
         mainPageController.setVetMaior(vetMaior);
         mainPageController.setVetMenor(vetMenor);
+        mainPageController.setListaClasses(listaClasses);
         
         mainPageController.teste();
     }
