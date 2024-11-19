@@ -99,6 +99,7 @@ public class TestPageController implements Initializable {
         }
     }
 
+    //alterar aqui
     public void normalizarClasse(TableView<ObservableList<String>> tableView) {
         Set<String> classSet = new HashSet<>();
         List<String> classValues = new ArrayList<>();
@@ -117,45 +118,6 @@ public class TestPageController implements Initializable {
             row.set(row.size() - 1, String.valueOf(newValue));
         }
     }
-    /*
-    private void buscaVetorMaiorMenorValorTabela(TableView<ObservableList<String>> tableView) {
-        int columnCount = tableView.getColumns().size();
-        double[] maioresValores = new double[columnCount];
-        double[] menoresValores = new double[columnCount];
-
-        //Atribuindo os primeiros valores
-        ObservableList<String> firstRow = tableView.getItems().get(0);
-        for (int col = 0; col < columnCount; col++) {
-            String cellData = firstRow.get(col);
-            if (cellData.matches("-?\\d+(\\.\\d+)?")) {
-                double valor = Double.parseDouble(cellData);
-                maioresValores[col] = valor;
-                menoresValores[col] = valor;
-            }
-        }
-
-        for (ObservableList<String> row : tableView.getItems()) {
-            for (int col = 0; col < columnCount; col++) {
-                String cellData = row.get(col);
-                if (cellData.matches("-?\\d+(\\.\\d+)?")) {//somente se for numero
-                    double valor = Double.parseDouble(cellData);
-                    if (valor > maioresValores[col]) {
-                        maioresValores[col] = valor;
-                    }
-                    if (valor < menoresValores[col]) {
-                        menoresValores[col] = valor;
-                    }
-                }
-            }
-        }
-        vetMaior = maioresValores;
-        vetMenor = menoresValores;
-        System.out.println("\n\n\n");
-        for (int col = 0; col < columnCount; col++) {
-            System.out.println("Coluna " + col + " - Maior: " + maioresValores[col] + " Menor: " + menoresValores[col]);
-        }
-    }
-     */
 
     private void createColumns(String[] headers, TableView<ObservableList<String>> tableView) {
         tableView.getColumns().clear();
