@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
@@ -13,6 +14,8 @@ import javafx.scene.text.Text;
 import org.fipp.redeneural.entidades.RedeNeural;
 
 import java.util.List;
+
+import static org.fipp.redeneural.entidades.Util.exibirMensagem;
 
 public class MatrizConfusaoPageController {
 
@@ -26,8 +29,28 @@ public class MatrizConfusaoPageController {
         redeNeural = mainPageController.getRedeNeural();
         if(redeNeural != null){
             matriz(redeNeural.getConfusionMatrix());
+            Exibir(redeNeural.getAcuracia(),redeNeural.getListaClasses());
         }
     }
+    private void Exibir(List<Double> Acuracia, List<String> classes) {
+        if (Acuracia.isEmpty() && classes.isEmpty()) {
+            exibirMensagem("Erro", "Dados inválidos fornecidos para exibição.", Alert.AlertType.ERROR);
+        }else{
+                // Construção da mensagem de acurácia
+                StringBuilder acuracias = new StringBuilder();
+                acuracias.append("Acurácia Global: ").append(Acuracia.remove(0)+"%").append("\n");
+
+                // Iteração pelas listas
+                for (int i = 0; i < classes.size(); i++) {
+                    acuracias.append("Acurácia da classe ").append(classes.get(i))
+                            .append(": ").append(Acuracia.get(i)+"%").append("\n");
+                }
+
+                // Exibe a mensagem formatada
+                exibirMensagem("Acurácia", acuracias.toString(), Alert.AlertType.INFORMATION);
+        }
+    }
+
     private void matriz(int[][] matrizConfusao) {
         // Define dimensões das células e do Canvas
         double cellWidth = 80;

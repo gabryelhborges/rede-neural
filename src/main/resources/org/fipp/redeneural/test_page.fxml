@@ -19,7 +19,7 @@
       <HBox alignment="BOTTOM_RIGHT">
          <children>
             <Button fx:id="Reload" mnemonicParsing="false" onAction="#btnReloadtable" text="Reload" />
-            <Button fx:id="bttIniciarTournament" mnemonicParsing="false" onAction="#onIniciarTreinamentoClick" text="Iniciar Treinamento" />
+            <Button fx:id="bttIniciarTournament" mnemonicParsing="false" onAction="#onIniciarTreinamentoClick" text="Iniciar Teste" />
          </children>
       </HBox>
    </children>
