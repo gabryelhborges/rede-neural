@@ -30,8 +30,6 @@ public class TrainingPageController extends MainPageController{
     public CheckBox checkbox_linear;
     public CheckBox checkbox_logistica;
     public CheckBox checkbox_hiperbolica;
-    public CheckBox checkBox_erro;
-    public CheckBox checkbox_interact;
     @FXML
     private TableView<ObservableList<String>> tableView;//tabela treinamento
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
@@ -47,13 +45,31 @@ public class TrainingPageController extends MainPageController{
 
         redeNeural = mainPageController.getRedeNeural();
         caminho = mainPageController.getCaminhoTreino();
+        
         if(caminho != null){
-            textField_number_entrada.setDisable(false);
-            textField_number_saida.setDisable(false);
+            textField_n.setText(mainPageController.getN());
+            textField_number_interacoes.setText(mainPageController.getNumber_interacoes());
+            textField_valor_erro.setText(mainPageController.getValor_erro());
+            textField_number_oculta.setText(mainPageController.getNumber_oculta());
+            checkbox(mainPageController.getFucaoTransferencia());
             File selectedFile = new File(caminho);
             carregarTabela(selectedFile);
         }
 
+    }
+    
+    private void checkbox (String ft){
+        funcaTransferencia = ft;
+        checkbox_hiperbolica.setSelected(false);
+        checkbox_logistica.setSelected(false);
+        checkbox_linear.setSelected(false);
+        if(ft == "linear"){
+            checkbox_linear.setSelected(true);
+        } else if (ft == "logistica") {
+            checkbox_logistica.setSelected(true);
+        } else if (ft == "hiperbolica") {
+            checkbox_hiperbolica.setSelected(true);
+        }
     }
 
     public void setRedeNeural(RedeNeural redeNeural) {
@@ -61,13 +77,12 @@ public class TrainingPageController extends MainPageController{
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        textField_n.setText("1");
+        textField_n.setText("0.1");
         textField_number_interacoes.setText("2000");
         textField_valor_erro.setText("0.00001");
         textField_number_oculta.setText("0");
         checkbox_linear.setSelected(true);
         funcaTransferencia = "linear";
-        checkBox_erro.setSelected(true);
         criterioParad = true;
     }
 
@@ -85,7 +100,9 @@ public class TrainingPageController extends MainPageController{
                 Integer.parseInt(textField_number_oculta.getText()),
                 Double.parseDouble(textField_valor_erro.getText()),
                 Integer.parseInt(textField_number_interacoes.getText()),
-                funcaTransferencia, Double.parseDouble(textField_n.getText()), true, criterioParad, listaClasses);
+                funcaTransferencia,
+                Double.parseDouble(textField_n.getText()), true, true, listaClasses);
+        textField_number_oculta.setText(String.valueOf(redeNeural.getNeuroniosOcultos().size()));
     }
 
     public void onChooseFileButtonClick(ActionEvent actionEvent) {
@@ -237,8 +254,15 @@ public class TrainingPageController extends MainPageController{
         Util.exibirMensagem("Treinamento", "Treinamento concluído com sucesso!", Alert.AlertType.INFORMATION);
         mainPageController.setCaminhoTreino(caminho_arquivo.getText());
         mainPageController.setRedeNeural(redeNeural);
+        mainPageController.setN(textField_n.getText());
+        mainPageController.setNumber_oculta(textField_number_oculta.getText());
+        mainPageController.setNumber_interacoes(textField_number_interacoes.getText());
+        mainPageController.setFucaoTransferencia(funcaTransferencia);
+        mainPageController.setValor_erro(textField_valor_erro.getText());
+
         mainPageController.setVetMaior(vetMaior);
         mainPageController.setVetMenor(vetMenor);
+        
         mainPageController.teste();
     }
 
@@ -258,15 +282,6 @@ public class TrainingPageController extends MainPageController{
         }
     }
 
-    public void onChangeCreterioParada(ActionEvent actionEvent) {
-        if(checkBox_erro.isSelected()){
-            checkbox_interact.setSelected(false);
-            criterioParad = false;
-        }else{
-            checkBox_erro.setSelected(false);
-            criterioParad = true;
-        }
-    }
 
     public void btnReloadtable(ActionEvent actionEvent) {
         carregarTabela(new File(caminho));

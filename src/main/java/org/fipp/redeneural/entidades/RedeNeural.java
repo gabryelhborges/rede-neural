@@ -20,6 +20,7 @@ public class RedeNeural{
     private List<Neuronio> neuroniosSaida;
     private boolean criterioParada;//true para epocas e false para erro
     private List<String> listaClasses;
+    private int[][] confusionMatrix;
     /*
     - A rede neural eh estimulada por um ambiente
     - A rede neural sofre modificacoes nos seus parametros livres
@@ -59,6 +60,7 @@ public class RedeNeural{
     }
 
     public void treinar(TableView<ObservableList<String>> tabela){
+        confusionMatrix = null;
         double erroRede;
         boolean haPlato, continuarTreino = true, mudarTaxaAprendizagem = true;
         List<Double> listaErrosRede = new ArrayList<>();
@@ -132,7 +134,7 @@ public class RedeNeural{
 
     public void testar(TableView<ObservableList<String>> tabelaTestes) {
         int numClasses = listaClasses.size();
-        int[][] confusionMatrix = new int[numClasses][numClasses];
+        confusionMatrix = new int[numClasses][numClasses];
         int totalTestes = 0;
         int acertos = 0;
         int ultimaPos = tabelaTestes.getItems().get(0).size() - 1;
@@ -507,5 +509,13 @@ public class RedeNeural{
 
     public void setListaClasses(List<String> listaClasses) {
         this.listaClasses = listaClasses;
+    }
+
+    public int[][] getConfusionMatrix() {
+        return confusionMatrix;
+    }
+
+    public void setConfusionMatrix(int[][] confusionMatrix) {
+        this.confusionMatrix = confusionMatrix;
     }
 }
