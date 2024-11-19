@@ -29,6 +29,23 @@ public class MainPageController implements Initializable {
     private RedeNeural redeNeural;
     public String caminhoTreino;
     public String caminhoTeste;
+    public double[] vetMaior, vetMenor;
+
+    public double[] getVetMaior() {
+        return vetMaior;
+    }
+
+    public void setVetMaior(double[] vetMaior) {
+        this.vetMaior = vetMaior;
+    }
+
+    public double[] getVetMenor() {
+        return vetMenor;
+    }
+
+    public void setVetMenor(double[] vetMenor) {
+        this.vetMenor = vetMenor;
+    }
 
     public String getCaminhoTreino() {
         return caminhoTreino;
