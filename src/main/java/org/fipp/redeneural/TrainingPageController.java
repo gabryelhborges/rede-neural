@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.fipp.redeneural.entidades.RedeNeural;
@@ -30,23 +31,34 @@ public class TrainingPageController extends MainPageController{
     public CheckBox checkbox_linear;
     public CheckBox checkbox_logistica;
     public CheckBox checkbox_hiperbolica;
+    public CheckBox checkBox_erro;
+    public CheckBox checkbox_interact;
+    public Button bttArq;
     @FXML
-    private TableView<ObservableList<String>> tableView;//tabela treinamento
+    private TableView<ObservableList<String>> tableView, tableViewTeste;//tabela treinamento
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
     private List<String> listaClasses;
     private String caminho;
+    private ObservableList<ObservableList<String>> dataTeste;
     private RedeNeural redeNeural;
     public String funcaTransferencia;
     public boolean criterioParad;
     private MainPageController mainPageController;
+    public TextField tfPorcentagem;
+    private int porcentagem;
+    private double tableWidth;
 
     public void setMainPageController(MainPageController mainPageController) {
         this.mainPageController = mainPageController;
-
+        porcentagem = mainPageController.getPorcentagem();
+        tfPorcentagem.setText(""+porcentagem);
         redeNeural = mainPageController.getRedeNeural();
         caminho = mainPageController.getCaminhoTreino();
         
         if(caminho != null){
+            textField_number_entrada.setDisable(false);
+            textField_number_saida.setDisable(false);
+            caminho_arquivo.setText(caminho);
             textField_n.setText(mainPageController.getN());
             textField_number_interacoes.setText(mainPageController.getNumber_interacoes());
             textField_valor_erro.setText(mainPageController.getValor_erro());
@@ -54,6 +66,15 @@ public class TrainingPageController extends MainPageController{
             checkbox(mainPageController.getFucaoTransferencia());
             File selectedFile = new File(caminho);
             carregarTabela(selectedFile);
+        }
+
+        dataTreino= mainPageController.getDataTreino();
+        if(dataTreino==null){
+            carregarTabela(new File(caminho));
+        }
+        else{
+            tableWidth = mainPageController.getWidth();
+            carregarTabela2(dataTreino, mainPageController.getHeaders());
         }
 
     }
@@ -84,6 +105,7 @@ public class TrainingPageController extends MainPageController{
         checkbox_linear.setSelected(true);
         funcaTransferencia = "linear";
         criterioParad = true;
+        dataTeste = FXCollections.observableArrayList();
     }
 
     private void criaRedeNeural() {
@@ -128,28 +150,68 @@ public class TrainingPageController extends MainPageController{
         caminho_arquivo.setText(selectedFile.getAbsolutePath());
     }
 
+    private void carregarTabela2(ObservableList<ObservableList<String>> data, String[] headers) {
+        createColumns(headers, tableView);
+
+        tableView.setItems(data);
+        ajustaLarguraColunas2(tableView);
+    }
+
+
     private void loadCSVFile(File file, TableView<ObservableList<String>> tableView) {
+        tfPorcentagem.setDisable(true);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
+
+            int totalLinhas = contarLinhas(file);
+
+            int quantoLer = (int) (totalLinhas * (porcentagem / 100.0));
+
             if (line != null) {
                 String[] headers = line.split(",");
                 createColumns(headers, tableView);
 
+                mainPageController.setHeaders(headers);
+
                 ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
+                int i=0;
                 while ((line = br.readLine()) != null) {
                     String[] fields = line.split(",");
                     ObservableList<String> row = FXCollections.observableArrayList(fields);
-                    data.add(row);
+                    if(i<quantoLer){
+                        data.add(row);
+                    }
+                    else{
+                        dataTeste.add(row);
+                    }
+                    i++;
                 }
                 tableView.setItems(data);
                 ajustaLarguraColunas(tableView);
-
                 normalizarTabela(tableView);
+                mainPageController.setDataTreino(data);
+                double wid = tableView.getWidth();
+                mainPageController.setWidth(wid);
+                if(porcentagem!=100)
+                    mainPageController.setDataTeste(dataTeste);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    private int contarLinhas(File file) {
+        int linhas = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            while (br.readLine() != null) {
+                linhas++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return linhas;
+    }
+
 
     private void normalizarTabela(TableView<ObservableList<String>> tableView) {
         normalizarDadosVetor(tableView);
@@ -190,40 +252,42 @@ public class TrainingPageController extends MainPageController{
     }
 
     private void buscaVetorMaiorMenorValorTabela(TableView<ObservableList<String>> tableView) {
-        int columnCount = tableView.getColumns().size();
-        double[] maioresValores = new double[columnCount];
-        double[] menoresValores = new double[columnCount];
+        if(!tableView.getItems().isEmpty()){
+            int columnCount = tableView.getColumns().size();
+            double[] maioresValores = new double[columnCount];
+            double[] menoresValores = new double[columnCount];
 
-        //Atribuindo os primeiros valores
-        ObservableList<String> firstRow = tableView.getItems().get(0);
-        for (int col = 0; col < columnCount; col++) {
-            String cellData = firstRow.get(col);
-            if (cellData.matches("-?\\d+(\\.\\d+)?")) {
-                double valor = Double.parseDouble(cellData);
-                maioresValores[col] = valor;
-                menoresValores[col] = valor;
-            }
-        }
-
-        for (ObservableList<String> row : tableView.getItems()) {
+            //Atribuindo os primeiros valores
+            ObservableList<String> firstRow = tableView.getItems().get(0);
             for (int col = 0; col < columnCount; col++) {
-                String cellData = row.get(col);
-                if (cellData.matches("-?\\d+(\\.\\d+)?")) {//somente se for numero
+                String cellData = firstRow.get(col);
+                if (cellData.matches("-?\\d+(\\.\\d+)?")) {
                     double valor = Double.parseDouble(cellData);
-                    if (valor > maioresValores[col]) {
-                        maioresValores[col] = valor;
-                    }
-                    if (valor < menoresValores[col]) {
-                        menoresValores[col] = valor;
+                    maioresValores[col] = valor;
+                    menoresValores[col] = valor;
+                }
+            }
+
+            for (ObservableList<String> row : tableView.getItems()) {
+                for (int col = 0; col < columnCount; col++) {
+                    String cellData = row.get(col);
+                    if (cellData.matches("-?\\d+(\\.\\d+)?")) {//somente se for numero
+                        double valor = Double.parseDouble(cellData);
+                        if (valor > maioresValores[col]) {
+                            maioresValores[col] = valor;
+                        }
+                        if (valor < menoresValores[col]) {
+                            menoresValores[col] = valor;
+                        }
                     }
                 }
             }
-        }
-        vetMaior = maioresValores;
-        vetMenor = menoresValores;
-        System.out.println("\n\n\n");
-        for (int col = 0; col < columnCount; col++) {
-            System.out.println("Coluna " + col + " - Maior: " + maioresValores[col] + " Menor: " + menoresValores[col]);
+            vetMaior = maioresValores;
+            vetMenor = menoresValores;
+            System.out.println("\n\n\n");
+            for (int col = 0; col < columnCount; col++) {
+                System.out.println("Coluna " + col + " - Maior: " + maioresValores[col] + " Menor: " + menoresValores[col]);
+            }
         }
     }
 
@@ -239,6 +303,13 @@ public class TrainingPageController extends MainPageController{
 
     private void ajustaLarguraColunas(TableView<ObservableList<String>> tableView) {
         double tableWidth = tableView.getWidth();
+
+        int columnCount = tableView.getColumns().size();
+        for (TableColumn<ObservableList<String>, ?> column : tableView.getColumns()) {
+            column.setPrefWidth(tableWidth / columnCount);
+        }
+    }
+    private void ajustaLarguraColunas2(TableView<ObservableList<String>> tableView) {
         int columnCount = tableView.getColumns().size();
         for (TableColumn<ObservableList<String>, ?> column : tableView.getColumns()) {
             column.setPrefWidth(tableWidth / columnCount);
@@ -285,5 +356,23 @@ public class TrainingPageController extends MainPageController{
 
     public void btnReloadtable(ActionEvent actionEvent) {
         carregarTabela(new File(caminho));
+    }
+
+    @FXML
+    private void atualizarPorcentagem() {
+        String texto = tfPorcentagem.getText();
+        try {
+            int valor = Integer.parseInt(texto);
+            if (valor >= 1 && valor <= 100) {
+                porcentagem = valor; // Atualiza a variável se o valor estiver entre 1 e 100
+                mainPageController.setPorcentagem(porcentagem);
+            } else {
+                tfPorcentagem.setText("100"); // Limpa o campo se o valor for inválido
+                porcentagem=100;
+                mainPageController.setPorcentagem(porcentagem);
+            }
+        } catch (NumberFormatException e) {
+            tfPorcentagem.setText("100"); // Limpa o campo se o valor não for um número
+        }
     }
 }

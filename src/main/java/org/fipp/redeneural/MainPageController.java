@@ -2,6 +2,7 @@ package org.fipp.redeneural;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -30,7 +31,16 @@ public class MainPageController implements Initializable {
     private RedeNeural redeNeural;
     public String caminhoTreino;
     public String caminhoTeste;
+    private String[] headers;
+    public int porcentagem;
+    private double width;
+    public ObservableList<ObservableList<String>> dataTeste, dataTreino;
     public double[] vetMaior, vetMenor;
+    private String n;
+    private String number_interacoes;
+    private String valor_erro;
+    private String number_oculta;
+    private String fucaoTransferencia;
 
     public double[] getVetMaior() {
         return vetMaior;
@@ -48,11 +58,6 @@ public class MainPageController implements Initializable {
         this.vetMenor = vetMenor;
     }
 
-    private String n;
-    private String number_interacoes;
-    private String valor_erro;
-    private String number_oculta;
-    private String fucaoTransferencia;
     public String getN() {
         return n;
     }
@@ -93,39 +98,71 @@ public class MainPageController implements Initializable {
         this.fucaoTransferencia = fucaoTransferencia;
     }
 
+    public double getWidth() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        if(width!=0.0)
+            this.width = width;
+    }
+
+    public String[] getHeaders() {
+        return headers;
+    }
+    public void setHeaders(String[] headers) {
+        this.headers = headers;
+    }
+
+    public ObservableList<ObservableList<String>> getDataTreino() {
+        return dataTreino;
+    }
+
+    public void setDataTreino(ObservableList<ObservableList<String>> dataTreino) {
+        this.dataTreino = dataTreino;
+    }
+
+    public ObservableList<ObservableList<String>> getDataTeste() {
+        return dataTeste;
+    }
+    public void setDataTeste(ObservableList<ObservableList<String>> dataTeste) {
+        this.dataTeste = dataTeste;
+    }
+    public void setPorcentagem(int porcentagem) {
+        this.porcentagem = porcentagem;
+    }
+    public int getPorcentagem(){
+        if(porcentagem==0)
+            return 100;
+        return porcentagem;
+    }
     public String getCaminhoTreino() {
         return caminhoTreino;
     }
-
     public void setCaminhoTreino(String caminhoTreino) {
         this.caminhoTreino = caminhoTreino;
     }
-
     public String getCaminhoTeste() {
         return caminhoTeste;
     }
-
     public void setCaminhoTeste(String caminhoTeste) {
         this.caminhoTeste = caminhoTeste;
     }
-
     public RedeNeural getRedeNeural() {
         return redeNeural;
     }
-
     public void setRedeNeural(RedeNeural redeNeural) {
         this.redeNeural = redeNeural;
     }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        porcentagem=100;
         staticpane = BorderPane_MainPage;
         if(redeNeural==null){
             FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("presentation_page.fxml"));
             loadPage(loader);
         }
     }
-
     // Função genérica para carregar uma página e substituir o conteúdo do VBox
     private void loadPage(FXMLLoader loader) {
         try {
@@ -142,7 +179,6 @@ public class MainPageController implements Initializable {
         trainingController.setMainPageController(this);
         textOrientador.setText("TREINAMENTO");
     }
-
     public void onTest(ActionEvent actionEvent) {
         teste();
     }
@@ -153,7 +189,6 @@ public class MainPageController implements Initializable {
         testController.setMainPageController(this);
         textOrientador.setText("TESTE");
     }
-
     public void onVizualizarRedeNeutal(ActionEvent actionEvent) {
         FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("rede_neural_page.fxml"));
         loadPage(loader);

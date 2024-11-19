@@ -16,26 +16,47 @@ import java.net.URL;
 import java.util.*;
 
 public class TestPageController implements Initializable {
-    public TableView tableView;
+    public TableView tableViewTeste;
     public Button bttIniciarTournament;
     public TextField caminho_arquivo;
+    public Button bttTeste;
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
     private List<String> listaClasses;
     private RedeNeural redeNeural;
     private MainPageController mainPageController;
     private String caminho;
+    private int porcentagem;
+    private double tableWidth;
+    private ObservableList<ObservableList<String>> dataTeste;
 
     public void setMainPageController(MainPageController mainPageController) {
         this.mainPageController = mainPageController;
 
         redeNeural = mainPageController.getRedeNeural();
-        caminho = mainPageController.getCaminhoTeste();
+        porcentagem = mainPageController.getPorcentagem();
         vetMaior = mainPageController.getVetMaior();
         vetMenor = mainPageController.getVetMenor();
-        if(caminho != null){
-            File selectedFile = new File(caminho);
-            carregarTabela(selectedFile);
+        if(porcentagem!=100){
+            tableWidth = mainPageController.getWidth();
+            bttTeste.setVisible(false);
+            bttTeste.setDisable(true);
+            caminho_arquivo.setText(mainPageController.getCaminhoTreino());
+            caminho_arquivo.setDisable(true);
+            caminho = mainPageController.getCaminhoTeste();
+            dataTeste = mainPageController.getDataTeste();
+            loadTable(dataTeste,tableViewTeste);
         }
+        else{
+            bttTeste.setVisible(true);
+            bttTeste.setDisable(false);
+            caminho_arquivo.setDisable(false);
+            caminho = mainPageController.getCaminhoTeste();
+            if(caminho != null){
+                File selectedFile = new File(caminho);
+                carregarTabela(selectedFile);
+            }
+        }
+
     }
 
     @Override
@@ -53,9 +74,24 @@ public class TestPageController implements Initializable {
 
     private void carregarTabela(File selectedFile){
         if (selectedFile != null) {
-            loadCSVFile(selectedFile, tableView);
+            loadCSVFile(selectedFile, tableViewTeste);
         }
         caminho_arquivo.setText(selectedFile.getAbsolutePath());
+    }
+
+    private void loadTable(ObservableList<ObservableList<String>> dataTeste, TableView<ObservableList<String>> tableView) {
+        String[] headers = mainPageController.getHeaders();
+        createColumns(headers, tableView);
+
+        tableView.setItems(dataTeste);
+        ajustaLarguraColunas2(tableView);
+        normalizarTabela(tableView);
+    }
+    private void ajustaLarguraColunas2(TableView<ObservableList<String>> tableView) {
+        int columnCount = tableView.getColumns().size();
+        for (TableColumn<ObservableList<String>, ?> column : tableView.getColumns()) {
+            column.setPrefWidth(tableWidth / columnCount);
+        }
     }
 
     private void loadCSVFile(File file, TableView<ObservableList<String>> tableView) {
@@ -183,7 +219,7 @@ public class TestPageController implements Initializable {
             Util.exibirMensagem("Erro", "Rede Neural não foi treinada!", Alert.AlertType.ERROR);
         }
         else{
-            redeNeural.testar(tableView);
+            redeNeural.testar(tableViewTeste);
             mainPageController.setCaminhoTeste(caminho_arquivo.getText());
         }
     }
