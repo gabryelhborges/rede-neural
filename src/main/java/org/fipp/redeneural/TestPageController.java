@@ -19,12 +19,14 @@ public class TestPageController implements Initializable {
     public TableView tableViewTeste;
     public Button bttIniciarTournament;
     public TextField caminho_arquivo;
+    public Button bttTeste;
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
     private List<String> listaClasses;
     private RedeNeural redeNeural;
     private MainPageController mainPageController;
     private String caminho;
     private int porcentagem;
+    private double tableWidth;
     private ObservableList<ObservableList<String>> dataTeste;
 
     public void setMainPageController(MainPageController mainPageController) {
@@ -33,10 +35,19 @@ public class TestPageController implements Initializable {
         redeNeural = mainPageController.getRedeNeural();
         porcentagem = mainPageController.getPorcentagem();
         if(porcentagem!=100){
+            tableWidth = mainPageController.getWidth();
+            bttTeste.setVisible(false);
+            bttTeste.setDisable(true);
+            caminho_arquivo.setText(mainPageController.getCaminhoTreino());
+            caminho_arquivo.setDisable(true);
+            caminho = mainPageController.getCaminhoTeste();
             dataTeste = mainPageController.getDataTeste();
             loadTable(dataTeste,tableViewTeste);
         }
         else{
+            bttTeste.setVisible(true);
+            bttTeste.setDisable(false);
+            caminho_arquivo.setDisable(false);
             caminho = mainPageController.getCaminhoTeste();
             if(caminho != null){
                 File selectedFile = new File(caminho);
@@ -71,8 +82,14 @@ public class TestPageController implements Initializable {
         createColumns(headers, tableView);
 
         tableView.setItems(dataTeste);
-        ajustaLarguraColunas(tableView);
+        ajustaLarguraColunas2(tableView);
         normalizarTabela(tableView);
+    }
+    private void ajustaLarguraColunas2(TableView<ObservableList<String>> tableView) {
+        int columnCount = tableView.getColumns().size();
+        for (TableColumn<ObservableList<String>, ?> column : tableView.getColumns()) {
+            column.setPrefWidth(tableWidth / columnCount);
+        }
     }
 
     private void loadCSVFile(File file, TableView<ObservableList<String>> tableView) {

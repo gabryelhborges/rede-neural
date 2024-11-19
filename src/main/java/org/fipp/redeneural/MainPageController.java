@@ -32,13 +32,33 @@ public class MainPageController implements Initializable {
     public String caminhoTeste;
     private String[] headers;
     public int porcentagem;
-    public ObservableList<ObservableList<String>> dataTeste;
+    private double width;
+    public ObservableList<ObservableList<String>> dataTeste, dataTreino;
+
+    public double getWidth() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        if(width!=0.0)
+            this.width = width;
+    }
+
     public String[] getHeaders() {
         return headers;
     }
     public void setHeaders(String[] headers) {
         this.headers = headers;
     }
+
+    public ObservableList<ObservableList<String>> getDataTreino() {
+        return dataTreino;
+    }
+
+    public void setDataTreino(ObservableList<ObservableList<String>> dataTreino) {
+        this.dataTreino = dataTreino;
+    }
+
     public ObservableList<ObservableList<String>> getDataTeste() {
         return dataTeste;
     }
@@ -73,6 +93,7 @@ public class MainPageController implements Initializable {
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        porcentagem=100;
         staticpane = BorderPane_MainPage;
         if(redeNeural==null){
             FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("presentation_page.fxml"));

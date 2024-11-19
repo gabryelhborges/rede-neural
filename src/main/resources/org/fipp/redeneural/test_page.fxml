@@ -11,7 +11,7 @@
    <children>
       <HBox alignment="CENTER" spacing="30.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#onChooseFileButtonClick" text="Carregar Arquivo" />
+            <Button fx:id="bttTeste" mnemonicParsing="false" onAction="#onChooseFileButtonClick" text="Carregar Arquivo" />
             <TextField fx:id="caminho_arquivo" disable="true" prefHeight="25.0" prefWidth="798.0" />
          </children>
       </HBox>

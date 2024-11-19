@@ -33,6 +33,7 @@ public class TrainingPageController extends MainPageController{
     public CheckBox checkbox_hiperbolica;
     public CheckBox checkBox_erro;
     public CheckBox checkbox_interact;
+    public Button bttArq;
     @FXML
     private TableView<ObservableList<String>> tableView, tableViewTeste;//tabela treinamento
     private double[] vetMaior, vetMenor;//utilizado para normalizar os valores das colunas
@@ -45,17 +46,30 @@ public class TrainingPageController extends MainPageController{
     private MainPageController mainPageController;
     public TextField tfPorcentagem;
     private int porcentagem;
+    private double tableWidth;
 
     public void setMainPageController(MainPageController mainPageController) {
         this.mainPageController = mainPageController;
-
+        porcentagem = mainPageController.getPorcentagem();
+        tfPorcentagem.setText(""+porcentagem);
         redeNeural = mainPageController.getRedeNeural();
         caminho = mainPageController.getCaminhoTreino();
+
         if(caminho != null){
             textField_number_entrada.setDisable(false);
             textField_number_saida.setDisable(false);
+            caminho_arquivo.setText(caminho);
             File selectedFile = new File(caminho);
             carregarTabela(selectedFile);
+        }
+
+        dataTreino= mainPageController.getDataTreino();
+        if(dataTreino==null){
+            carregarTabela(new File(caminho));
+        }
+        else{
+            tableWidth = mainPageController.getWidth();
+            carregarTabela2(dataTreino, mainPageController.getHeaders());
         }
 
     }
@@ -73,8 +87,6 @@ public class TrainingPageController extends MainPageController{
         funcaTransferencia = "linear";
         checkBox_erro.setSelected(true);
         criterioParad = true;
-        tfPorcentagem.setText("100");
-        porcentagem=100;
         dataTeste = FXCollections.observableArrayList();
     }
 
@@ -118,7 +130,16 @@ public class TrainingPageController extends MainPageController{
         caminho_arquivo.setText(selectedFile.getAbsolutePath());
     }
 
+    private void carregarTabela2(ObservableList<ObservableList<String>> data, String[] headers) {
+        createColumns(headers, tableView);
+
+        tableView.setItems(data);
+        ajustaLarguraColunas2(tableView);
+    }
+
+
     private void loadCSVFile(File file, TableView<ObservableList<String>> tableView) {
+        tfPorcentagem.setDisable(true);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
 
@@ -148,6 +169,9 @@ public class TrainingPageController extends MainPageController{
                 tableView.setItems(data);
                 ajustaLarguraColunas(tableView);
                 normalizarTabela(tableView);
+                mainPageController.setDataTreino(data);
+                double wid = tableView.getWidth();
+                mainPageController.setWidth(wid);
                 if(porcentagem!=100)
                     mainPageController.setDataTeste(dataTeste);
             }
@@ -259,6 +283,13 @@ public class TrainingPageController extends MainPageController{
 
     private void ajustaLarguraColunas(TableView<ObservableList<String>> tableView) {
         double tableWidth = tableView.getWidth();
+
+        int columnCount = tableView.getColumns().size();
+        for (TableColumn<ObservableList<String>, ?> column : tableView.getColumns()) {
+            column.setPrefWidth(tableWidth / columnCount);
+        }
+    }
+    private void ajustaLarguraColunas2(TableView<ObservableList<String>> tableView) {
         int columnCount = tableView.getColumns().size();
         for (TableColumn<ObservableList<String>, ?> column : tableView.getColumns()) {
             column.setPrefWidth(tableWidth / columnCount);

@@ -22,8 +22,6 @@ public class HelloApplication extends Application {
 
         stage.show();
 
-
-
         // Adiciona um listener para detectar a tecla Enter pressionada
 //        mainPage.setOnKeyPressed(event -> {
 //            if (event.getCode() == KeyCode.ENTER) {
