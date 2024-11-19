@@ -34,6 +34,8 @@ public class TestPageController implements Initializable {
 
         redeNeural = mainPageController.getRedeNeural();
         porcentagem = mainPageController.getPorcentagem();
+        vetMaior = mainPageController.getVetMaior();
+        vetMenor = mainPageController.getVetMenor();
         if(porcentagem!=100){
             tableWidth = mainPageController.getWidth();
             bttTeste.setVisible(false);
@@ -120,7 +122,7 @@ public class TestPageController implements Initializable {
     }
 
     public void normalizarDadosVetor(TableView<ObservableList<String>> tableView) {
-        buscaVetorMaiorMenorValorTabela(tableView);
+        //buscaVetorMaiorMenorValorTabela(tableView);
         for (ObservableList<String> row : tableView.getItems()) {
             for (int col = 0; col < row.size(); col++) {
                 String cellData = row.get(col);
@@ -151,7 +153,7 @@ public class TestPageController implements Initializable {
             row.set(row.size() - 1, String.valueOf(newValue));
         }
     }
-
+    /*
     private void buscaVetorMaiorMenorValorTabela(TableView<ObservableList<String>> tableView) {
         int columnCount = tableView.getColumns().size();
         double[] maioresValores = new double[columnCount];
@@ -189,6 +191,7 @@ public class TestPageController implements Initializable {
             System.out.println("Coluna " + col + " - Maior: " + maioresValores[col] + " Menor: " + menoresValores[col]);
         }
     }
+     */
 
     private void createColumns(String[] headers, TableView<ObservableList<String>> tableView) {
         tableView.getColumns().clear();

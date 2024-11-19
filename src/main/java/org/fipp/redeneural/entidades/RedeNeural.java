@@ -1,6 +1,7 @@
 package org.fipp.redeneural.entidades;
 
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class RedeNeural{
     private List<Neuronio> neuroniosSaida;
     private boolean criterioParada;//true para epocas e false para erro
     private List<String> listaClasses;
+    private int[][] confusionMatrix;
     /*
     - A rede neural eh estimulada por um ambiente
     - A rede neural sofre modificacoes nos seus parametros livres
@@ -58,29 +60,83 @@ public class RedeNeural{
     }
 
     public void treinar(TableView<ObservableList<String>> tabela){
+        confusionMatrix = null;
         double erroRede;
-        int k = 0;
+        boolean haPlato, continuarTreino = true, mudarTaxaAprendizagem = true;
+        List<Double> listaErrosRede = new ArrayList<>();
+        int k = 0, aux = 15;
         do {
             for (ObservableList<String> linha : tabela.getItems()) {
                 executarBackPropagation(linha);
             }
             erroRede = calculaErroRede();
             System.out.println("Erro da rede: " + erroRede);
+            listaErrosRede.add(erroRede);
+
+            if(k > aux && mudarTaxaAprendizagem) {
+                haPlato = verificaPlato(listaErrosRede, k);
+                if (haPlato) {
+                    Util.exibirGraficoErros(listaErrosRede);
+                    continuarTreino = Util.exibirMensagemConfirmacao("PLATO!",
+                            "Plato detectado! Gostaria de continuar?");
+                    if (continuarTreino) {
+                        aux = k + 15;
+                        mudarTaxaAprendizagem = Util.exibirMensagemConfirmacao("TAXA DE APRENDIZAGEM",
+                                "Deseja mudar a taxa de aprendizagem?");
+                        if (mudarTaxaAprendizagem) {
+                            //perguntar a nova taxa de aprendizagem
+                            setTaxaAprendizagem(Util.solicitarNovaTaxaAprendizagem(this.taxaAprendizagem));
+                        }
+                    }
+                }
+            }
             k++;
-        }while(erroRede > this.limiar &&  k < this.epocas);
+        }while(erroRede > this.limiar &&  k < this.epocas && continuarTreino);
 
         if(erroRede < this.limiar){
-            System.out.println("Erro final rede: "+erroRede);
+            System.out.println("Erro final rede: "+ erroRede);
         }
         else{
             System.out.println("Número de epocas atingido");
         }
+        if(continuarTreino) {
+            Util.exibirGraficoErros(listaErrosRede);
+        }
+    }
+
+
+    private boolean verificaPlato(List<Double> listaErrosRede, int posAtual) {
+        //calcula media, soma as diferencas da media e erro apresentado, calcula media (da soma) e verifica se é menor igual ao limiar
+        int intervalo = 15;
+        if (posAtual >= intervalo) {
+            int posInicialIntervalo = posAtual - intervalo;
+            double somaErros = 0.0;
+            double somaDiferencas = 0.0;
+
+            for (int i = posInicialIntervalo; i < posAtual; i++) {
+                somaErros += listaErrosRede.get(i);
+            }
+
+            double media = somaErros / intervalo;
+
+            for (int i = posInicialIntervalo; i < posAtual; i++) {
+                somaDiferencas += Math.abs(listaErrosRede.get(i) - media); // Diferença absoluta
+            }
+
+            double mediaDiferencas = somaDiferencas / intervalo;
+
+            if (mediaDiferencas <= this.limiar) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void testar(TableView<ObservableList<String>> tabelaTestes) {
         int numClasses = listaClasses.size();
-        int[][] confusionMatrix = new int[numClasses][numClasses];
-
+        confusionMatrix = new int[numClasses][numClasses];
+        int totalTestes = 0;
+        int acertos = 0;
         int ultimaPos = tabelaTestes.getItems().get(0).size() - 1;
         for (ObservableList<String> linha : tabelaTestes.getItems()) {
             aplicaEntradas(linha);
@@ -89,7 +145,6 @@ public class RedeNeural{
             calculaNetCamadaSaida();
             calculaICamada(neuroniosSaida);
 
-            // Identificação da classe
             double maiorSaida = neuroniosSaida.get(0).getI();
             int pos = 0;
 
@@ -100,27 +155,38 @@ public class RedeNeural{
                     pos = k;
                 }
             }
-
             int classeDesejada = Integer.parseInt(linha.get(ultimaPos).toString()) - 1; // Classe desejada da linha de teste
             int classeIdentificada = pos;
 
-            // Atualiza a matriz de confusão
             confusionMatrix[classeDesejada][classeIdentificada]++;
-            /*
+            totalTestes++;
             if (classeDesejada == classeIdentificada) {
-                System.out.println("Classe " + (classeDesejada + 1) + " foi identificada corretamente como " + (classeIdentificada + 1) + "!");
-            } else {
-                System.out.println("Classe " + (classeDesejada + 1) + " foi identificada incorretamente como " + (classeIdentificada + 1) + ".");
+                acertos++;
             }
-            */
         }
-
-        // Imprime a matriz de confusão
         exibeMatriz(confusionMatrix);
+
+        // calcula acurácia global
+        double acuraciaGlobal = (double) acertos / totalTestes * 100;
+        System.out.println("Acurácia Global: " + acuraciaGlobal + "%");
+
+        // calcula acurácia por classe
+        for (int i = 0; i < numClasses; i++) {
+            int totalClasse = 0;
+            int acertosClasse = 0;
+            for (int j = 0; j < numClasses; j++) {
+                totalClasse += confusionMatrix[i][j];
+                if (i == j) {
+                    acertosClasse += confusionMatrix[i][j];
+                }
+            }
+            double acuraciaClasse = (totalClasse > 0) ? (double) acertosClasse / totalClasse * 100 : 0;
+            System.out.println("Acurácia da classe " + (i + 1) + ": " + acuraciaClasse + "%");//no lugar de i+1, pode ser listaClasses.get(i)
+        }
     }
 
     public static void exibeMatriz(int[][] matrix) {
-        // Determine the maximum width of the elements in the matrix
+        // Determina a largura máxima dos elementos da matriz
         int maxWidth = 0;
         for (int[] row : matrix) {
             for (int element : row) {
@@ -131,35 +197,13 @@ public class RedeNeural{
             }
         }
 
-        // Print the matrix with equal spacing
+        // Imprime a matriz com espaçamento igual
         for (int[] row : matrix) {
             for (int element : row) {
                 System.out.printf("%" + maxWidth + "d ", element);
             }
             System.out.println();
         }
-    }
-
-    private void treinarPorEpocas(TableView<ObservableList<String>> tabela) {
-        int k = 0;
-        do{
-            for (ObservableList<String> linha : tabela.getItems()) {
-                executarBackPropagation(linha);
-                System.out.println("Erro da rede: " + calculaErroRede());
-            }
-            k++;
-        }while(k < this.epocas);
-    }
-
-    private void treinarPorErro(TableView<ObservableList<String>> tabela) {
-        double erroRede;
-        do {
-            for (ObservableList<String> linha : tabela.getItems()) {
-                executarBackPropagation(linha);
-            }
-            erroRede = calculaErroRede();
-        } while (this.limiar < erroRede);//enquanto erro da rede for maior que o erro estipulado(limiar)
-        System.out.println("Erro final rede com erro: "+erroRede);
     }
 
     private void executarBackPropagation(ObservableList<String> linha) {
@@ -361,13 +405,15 @@ public class RedeNeural{
         return i;
     }
 
-    private int calcularQtdeCamadasOcultas(boolean aritmetica) {
-        if(aritmetica){
-            return 1 + (qtdeEntradas + qtdeSaidas) / 2;//aritmetica
+    public int calcularQtdeCamadasOcultas(boolean aritmetica) {
+        //Math.ceil, arredonda o numero sempre pra cima
+        if (aritmetica) {
+            return (int) Math.ceil((qtdeEntradas + qtdeSaidas) / 2.0);
         } else {
-            return (int) Math.sqrt(qtdeEntradas * qtdeSaidas);//geometrica
+            return (int) Math.ceil(Math.sqrt(qtdeEntradas * qtdeSaidas));
         }
     }
+
 
     public double getTaxaAprendizagem() {
         return taxaAprendizagem;
@@ -463,5 +509,13 @@ public class RedeNeural{
 
     public void setListaClasses(List<String> listaClasses) {
         this.listaClasses = listaClasses;
+    }
+
+    public int[][] getConfusionMatrix() {
+        return confusionMatrix;
+    }
+
+    public void setConfusionMatrix(int[][] confusionMatrix) {
+        this.confusionMatrix = confusionMatrix;
     }
 }

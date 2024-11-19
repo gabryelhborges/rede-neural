@@ -67,6 +67,7 @@ public class RedeNeuralPageController {
 
         // Adiciona um título para a camada
         Text camadaTitulo = new Text(xPosition - 20, 50, tipoCamada);
+        camadaTitulo.setFill(Color.WHITE);
         pane.getChildren().add(camadaTitulo);
 
         return circulos;
