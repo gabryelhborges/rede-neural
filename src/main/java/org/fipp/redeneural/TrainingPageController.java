@@ -237,6 +237,8 @@ public class TrainingPageController extends MainPageController{
         Util.exibirMensagem("Treinamento", "Treinamento concluído com sucesso!", Alert.AlertType.INFORMATION);
         mainPageController.setCaminhoTreino(caminho_arquivo.getText());
         mainPageController.setRedeNeural(redeNeural);
+        mainPageController.setVetMaior(vetMaior);
+        mainPageController.setVetMenor(vetMenor);
         mainPageController.teste();
     }
 
