@@ -259,6 +259,10 @@ public class TrainingPageController extends MainPageController{
         mainPageController.setNumber_interacoes(textField_number_interacoes.getText());
         mainPageController.setFucaoTransferencia(funcaTransferencia);
         mainPageController.setValor_erro(textField_valor_erro.getText());
+
+        mainPageController.setVetMaior(vetMaior);
+        mainPageController.setVetMenor(vetMenor);
+        
         mainPageController.teste();
     }
 
