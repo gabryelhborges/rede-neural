@@ -35,21 +35,22 @@ public class MatrizConfusaoPageController {
     private void Exibir(List<Double> Acuracia, List<String> classes) {
         if (Acuracia.isEmpty() && classes.isEmpty()) {
             exibirMensagem("Erro", "Dados inválidos fornecidos para exibição.", Alert.AlertType.ERROR);
-        }else{
-                // Construção da mensagem de acurácia
-                StringBuilder acuracias = new StringBuilder();
-                acuracias.append("Acurácia Global: ").append(Acuracia.remove(0)+"%").append("\n");
+        } else {
+            // Construção da mensagem de acurácia
+            StringBuilder acuracias = new StringBuilder();
+            acuracias.append("Acurácia Global: ").append(String.format("%.2f", Acuracia.remove(0))).append("%").append("\n");
 
-                // Iteração pelas listas
-                for (int i = 0; i < classes.size(); i++) {
-                    acuracias.append("Acurácia da classe ").append(classes.get(i))
-                            .append(": ").append(Acuracia.get(i)+"%").append("\n");
-                }
+            // Iteração pelas listas
+            for (int i = 0; i < classes.size(); i++) {
+                acuracias.append("Acurácia da classe ").append(classes.get(i))
+                        .append(": ").append(String.format("%.2f", Acuracia.get(i))).append("%").append("\n");
+            }
 
-                // Exibe a mensagem formatada
-                exibirMensagem("Acurácia", acuracias.toString(), Alert.AlertType.INFORMATION);
+            // Exibe a mensagem formatada
+            exibirMensagem("Acurácia", acuracias.toString(), Alert.AlertType.INFORMATION);
         }
     }
+
 
     private void matriz(int[][] matrizConfusao) {
         // Define dimensões das células e do Canvas
