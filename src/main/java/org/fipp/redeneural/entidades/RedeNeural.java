@@ -70,13 +70,15 @@ public class RedeNeural{
 
     public void treinar(TableView<ObservableList<String>> tabela){
         confusionMatrix = null;
-        double erroRede= 0.0;
+        double erroRede= 1.0;
         boolean haPlato, continuarTreino = true, mudarTaxaAprendizagem = true;
         List<Double> listaErrosRede = new ArrayList<>();
         int k = 0, aux = 15;
         do {
             for (ObservableList<String> linha : tabela.getItems()) {
-                erroRede = executarBackPropagation(linha);
+                if(erroRede > this.limiar) {
+                    erroRede = executarBackPropagation(linha);
+                }
             }
             System.out.println("Erro da rede: " + erroRede);
             listaErrosRede.add(erroRede);
