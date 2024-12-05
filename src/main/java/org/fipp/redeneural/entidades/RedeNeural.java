@@ -70,15 +70,14 @@ public class RedeNeural{
 
     public void treinar(TableView<ObservableList<String>> tabela){
         confusionMatrix = null;
-        double erroRede;
+        double erroRede= 0.0;
         boolean haPlato, continuarTreino = true, mudarTaxaAprendizagem = true;
         List<Double> listaErrosRede = new ArrayList<>();
         int k = 0, aux = 15;
         do {
             for (ObservableList<String> linha : tabela.getItems()) {
-                executarBackPropagation(linha);
+                erroRede = executarBackPropagation(linha);
             }
-            erroRede = calculaErroRede();
             System.out.println("Erro da rede: " + erroRede);
             listaErrosRede.add(erroRede);
 
@@ -217,7 +216,7 @@ public class RedeNeural{
         }
     }
 
-    private void executarBackPropagation(ObservableList<String> linha) {
+    private double executarBackPropagation(ObservableList<String> linha) {
         String classeDesejada = linha.get(linha.size() - 1);
         aplicaEntradas(linha);
         calculaNetCamadaOculta();
@@ -228,7 +227,7 @@ public class RedeNeural{
         calculaErroCamadaOculta();
         atualizaPesosCamadaSaida();//atualiza pesos da camada de saida
         atualizaPesosCamadaOculta();//atualiza pesos da camada oculta
-        //calculaErroRede();
+        return calculaErroRede(linha);
     }
 
     private void aplicaEntradas(ObservableList<String> linha) {
@@ -341,12 +340,23 @@ public class RedeNeural{
         //System.out.println("Terminou de atualizar os pesos da camada oculta");
     }
 
-    private double calculaErroRede() {
+    private double calculaErroRedeAntigo() {
         double erroRede = 0.0;
         for(Neuronio n : neuroniosSaida){
             erroRede += Math.pow(n.getErro(),2);
         }
         erroRede = erroRede * 0.5;
+        return erroRede;
+    }
+
+    private double calculaErroRede(ObservableList<String> linha) {
+        double erroRede = 0.0;
+        for (int i = 0; i < neuroniosSaida.size(); i++) {
+            Neuronio n = neuroniosSaida.get(i);
+            double desejado = (i == Integer.parseInt(linha.get(linha.size() - 1)) - 1) ? 1.0 : 0.0;
+            erroRede += Math.pow(desejado - n.getI(), 2);
+        }
+        erroRede *= 0.5;
         return erroRede;
     }
 
