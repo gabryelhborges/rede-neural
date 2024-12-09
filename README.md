@@ -24,6 +24,7 @@ Para iniciar, selecione a aba Treinamento. Nesta aba, você poderá configurar o
 * Valor de Erro: O erro mínimo desejado para o treinamento.
 * Número de Iterações: Quantidade máxima de épocas de treinamento.
 * Taxa de Aprendizado (N): Define o quão rápido a rede ajusta seus pesos.
+* Neurônios ocultos: O número de neurônios ocultos que será usado na rede neural(Se for zero, o programa faz o cálculo da quantidade de neurônios necessários).
 
 Passos para o Treinamento:
 * Insira a porcentagem do arquivo que será usada para o treinamento no campo correspondente. (Após carregar o arquivo não é possível alterar)
@@ -32,7 +33,7 @@ Passos para o Treinamento:
 
 Durante o treinamento:
 
-A rede neural pode chegar em um estado em que o erro apresentado não varia muito(aprendizagem "estagnou", chamado platô), quando isso for identificado, o programa exibirá uma mensagem perguntando se o usuário deseja:
+A rede neural pode chegar em um estado em que o erro apresentado não varia muito(aprendizagem "estagnou", chamado platô), quando isso for identificado, o programa exibirá mensagens e o usuário pode escolher entre:
 * Opção 1: Continuar sem alterar a taxa de aprendizagem: Deseja continuar? -> Sim, Alterar taxa de aprendizagem? -> Cancelar. Nesse caso, não serão mais detectados estados platô;
 
 * Opção 2: Continuar e alterar a taxa de aprendizagem: Deseja continuar? -> Sim, Alterar taxa de aprendizagem? -> Sim, Inserir novo valor(Se novoValor > 1, taxa = 1, se novoValor < 0, taxa = 0.1), ao alterar a taxa, o próximo estado platô será identificado;
