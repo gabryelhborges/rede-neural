@@ -30,6 +30,12 @@ Passos para o Treinamento:
 * Insira a porcentagem do arquivo que será usada para o treinamento no campo correspondente.
 * Clique no botão Iniciar Treinamento (localizado no canto inferior esquerdo).
 
+Durante o treinamento:
+* A rede neural pode chegar em um estado em que o erro apresentado não varia muito(aprendizagem "estagnou", chamado platô), quando isso for identificado, o programa exibirá uma mensagem perguntando se o usuário deseja:
+*     Opção 1: Continuar sem alterar a taxa de aprendizagem: Deseja continuar? -> Sim, Alterar taxa de aprendizagem? -> Cancelar. Nesse caso, não serão mais detectados estados platô;
+*     Opção 2: Continuar e alterar a taxa de aprendizagem: Deseja continuar? -> Sim, Alterar taxa de aprendizagem? -> Sim, Inserir novo valor(Se novoValor > 1, taxa = 1, se novoValor < 0, taxa = 0.1), ao alterar a taxa, o próximo estado platô será identificado;
+*     Opção 3: Parar com o treinamento: se o erro da rede chegar ao limiar estabelecido, o programa mostrará uma mensagem avisando, e perguntará se deve continuar ou parar;
+
 Após o término do treinamento, a aplicação automaticamente avançará para a aba Teste.
 
 ### 2. Teste
