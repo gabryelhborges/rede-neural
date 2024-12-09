@@ -26,8 +26,8 @@ Para iniciar, selecione a aba Treinamento. Nesta aba, você poderá configurar o
 * Taxa de Aprendizado (N): Define o quão rápido a rede ajusta seus pesos.
 
 Passos para o Treinamento:
+* Insira a porcentagem do arquivo que será usada para o treinamento no campo correspondente. (Após carregar o arquivo não é possível alterar)
 * Clique no botão Carregar Arquivo para selecionar o arquivo de dados de treinamento.
-* Insira a porcentagem do arquivo que será usada para o treinamento no campo correspondente.
 * Clique no botão Iniciar Treinamento (localizado no canto inferior esquerdo).
 
 Durante o treinamento:
