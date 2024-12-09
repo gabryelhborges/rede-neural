@@ -31,6 +31,7 @@ Passos para o Treinamento:
 * Clique no botão Iniciar Treinamento (localizado no canto inferior esquerdo).
 
 Durante o treinamento:
+
 A rede neural pode chegar em um estado em que o erro apresentado não varia muito(aprendizagem "estagnou", chamado platô), quando isso for identificado, o programa exibirá uma mensagem perguntando se o usuário deseja:
 * Opção 1: Continuar sem alterar a taxa de aprendizagem: Deseja continuar? -> Sim, Alterar taxa de aprendizagem? -> Cancelar. Nesse caso, não serão mais detectados estados platô;
 
