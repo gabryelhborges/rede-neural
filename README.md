@@ -1,3 +1,8 @@
+# Desenvolvido por:
+* Gabryel Henrique Borges
+* Leon Bruchmann Ronchi
+* Yago Akio
+
 # Rede Neural MLP (Multilayer Perceptron) com Algoritmo Backpropagation
 ## Sobre o Projeto
 Este projeto implementa uma Rede Neural do tipo MLP (Multilayer Perceptron) utilizando o algoritmo de backpropagation para aprendizado supervisionado. A aplicação possui uma interface intuitiva para treinar, visualizar, testar a rede neural e gerar a matriz de confusão correspondente.
